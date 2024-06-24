@@ -1,6 +1,6 @@
 package com.example.playgroundyandexschool.fragments
 
-import android.graphics.Canvas
+import SwipeToDeleteCallback
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,21 +11,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.databinding.FragmentMainScreenBinding
 import com.example.playgroundyandexschool.utils.TodoItemsAdapter
-import com.example.playgroundyandexschool.utils.classes.ViewUtils
 import com.example.playgroundyandexschool.utils.viewModels.MainViewModel
-import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.launch
 
 
 class MainScreenFragment : Fragment() {
-    private lateinit var binding: FragmentMainScreenBinding
+    private var _binding: FragmentMainScreenBinding? = null
+    private val binding get() = _binding!!
     private val viewModel: MainViewModel by viewModels()
     private val adapter = TodoItemsAdapter(
-        function = { viewModel.updateFilteredList() },
+        updateFunction = { viewModel.updateFilteredList() },
         onItemClicked = { itemId ->
             val action = MainScreenFragmentDirections.mainToEdit(itemId)
             findNavController().navigate(action)
@@ -36,8 +34,13 @@ class MainScreenFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMainScreenBinding.inflate(inflater, container, false)
+        _binding = FragmentMainScreenBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,7 +69,7 @@ class MainScreenFragment : Fragment() {
     }
 
     private fun observeViewModel(): Unit = with(binding) {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiState.collect { uiState ->
                 val iconRes =
                     if (uiState.todosVisible) R.drawable.visibility else R.drawable.visibility_off
@@ -82,79 +85,14 @@ class MainScreenFragment : Fragment() {
         }
     }
 
-
     private fun setupSwipeToDelete() {
-        val itemTouchHelperCallback = object :
-            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.adapterPosition
-                val item = adapter.getElement(position)
-                when (direction) {
-                    ItemTouchHelper.LEFT -> {
-                        viewModel.deleteItem(item)
-                    }
-
-                    ItemTouchHelper.RIGHT -> {
-                        viewModel.changeDone(item, !item.isCompleted)
-                        adapter.notifyItemChanged(position)
-                    }
-                }
-
-            }
-
-            override fun onChildDraw(
-                canvas: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                RecyclerViewSwipeDecorator
-                    .Builder(
-                        canvas,
-                        recyclerView,
-                        viewHolder,
-                        dX,
-                        dY,
-                        actionState,
-                        isCurrentlyActive
-                    )
-                    .addBackgroundColor(
-                        ViewUtils.resolveColorAttr(requireContext(), R.attr.back_secondary)
-                    )
-                    .addSwipeRightBackgroundColor(
-                        ViewUtils.resolveColorAttr(requireContext(), R.attr.color_green)
-                    )
-                    .addSwipeLeftBackgroundColor(
-                        ViewUtils.resolveColorAttr(requireContext(), R.attr.color_red)
-                    )
-                    .addSwipeRightActionIcon(R.drawable.done)
-                    .addSwipeLeftActionIcon(R.drawable.delete_white)
-                    .create()
-                    .decorate()
-                super.onChildDraw(
-                    canvas,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
-            }
-        }
-
-        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+        val swipeToDeleteCallback = SwipeToDeleteCallback(
+            context = requireContext(),
+            adapter = adapter,
+            deleteItem = { viewModel.deleteItem(it) },
+            changeDone = { item, isDone -> viewModel.changeDone(item, isDone) }
+        )
+        val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
         itemTouchHelper.attachToRecyclerView(binding.rvTodoList)
     }
 }

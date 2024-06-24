@@ -133,7 +133,6 @@ object TodoItemsRepository {
             currentList[index] = todoItem
         }
         todoItemsList.value = currentList
-
     }
 
     fun removeTodoItem(id: String) {
@@ -145,5 +144,4 @@ object TodoItemsRepository {
             todoItemsList.value = currentList
         }
     }
-
 }

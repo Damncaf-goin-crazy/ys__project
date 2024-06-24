@@ -1,10 +1,14 @@
 package com.example.playgroundyandexschool.utils.viewModels
 
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.utils.TodoItemsRepository
 import com.example.playgroundyandexschool.utils.classes.Priority
 import com.example.playgroundyandexschool.utils.classes.TodoItem
+import com.example.playgroundyandexschool.utils.classes.getText
+import com.example.playgroundyandexschool.utils.classes.toPriority
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -15,24 +19,22 @@ class EditTodoVIewModel : ViewModel() {
     private val repository = TodoItemsRepository
     var isNewItem = false
 
-
     private val _priorityText = MutableStateFlow("")
     val priorityText: StateFlow<String> get() = _priorityText
 
-
-    fun setId(id: String) {
+    fun setId(context: Context, id: String) {
         if (currentItem == null) {
             currentItem = repository.getTodoItem(id)
             temporaryItem = currentItem?.copy()
-            _priorityText.value = getPriorityText()
+            _priorityText.value = getPriorityText(context)
         }
     }
 
-    fun createItem() {
+    fun createItem(context: Context) {
         if (currentItem == null) {
             currentItem = TodoItem.empty()
             temporaryItem = currentItem?.copy()
-            _priorityText.value = getPriorityText()
+            _priorityText.value = getPriorityText(context)
         }
         isNewItem = true
     }
@@ -60,27 +62,17 @@ class EditTodoVIewModel : ViewModel() {
         temporaryItem?.deadline = deadline
     }
 
-    fun changePriority(text: String) {
-        when (text) {
-            "!! Высокая" -> temporaryItem?.priority = Priority.HIGH
-            "Низкая" -> temporaryItem?.priority = Priority.LOW
-            else -> temporaryItem?.priority = Priority.NO
-        }
-        _priorityText.value = getPriorityText()
 
+    fun changePriority(context: Context, text: String) {
+        temporaryItem?.priority = text.toPriority(context)
+        _priorityText.value = getPriorityText(context)
     }
 
-    fun getPriorityText(): String {
-        return when (temporaryItem?.priority) {
-            Priority.HIGH -> "!! Высокая"
-            Priority.LOW -> "Низкая"
-            else -> "Нет"
-        }
+    fun getPriorityText(context: Context): String {
+        return temporaryItem?.priority?.getText(context) ?: context.getString(R.string.priority_no)
     }
 
     fun getDeadline(): Long? {
         return temporaryItem?.deadline
     }
-
-
 }

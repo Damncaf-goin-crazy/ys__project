@@ -23,16 +23,16 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class EditTodoFragment : Fragment() {
-    private lateinit var binding: FragmentEditTodoBinding
+    private var _binding: FragmentEditTodoBinding? = null
+    private val binding get() = _binding!!
     private val navArgs: EditTodoFragmentArgs by navArgs()
     private val editViewModel: EditTodoVIewModel by viewModels()
     private lateinit var timePickerDialog: DatePickerDialog
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        binding = FragmentEditTodoBinding.inflate(inflater, container, false)
+        _binding = FragmentEditTodoBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -44,15 +44,19 @@ class EditTodoFragment : Fragment() {
         observeViewModel()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun init() {
         val itemId = navArgs.id
 
         if (itemId == null) {
-            editViewModel.createItem()
+            editViewModel.createItem(requireContext())
         } else {
-            editViewModel.setId(itemId)
+            editViewModel.setId(requireContext(), itemId)
         }
-
         drawContent(editViewModel.getItem())
     }
 
@@ -70,7 +74,7 @@ class EditTodoFragment : Fragment() {
         }
 
         //важность текст
-        val text = editViewModel.getPriorityText()
+        val text = editViewModel.getPriorityText(requireContext())
         tvPriority.text = text
         if (text == "!! Высокая") {
             tvPriority.setTextColor(ViewUtils.resolveColorAttr(requireContext(), R.attr.color_red))
@@ -83,13 +87,11 @@ class EditTodoFragment : Fragment() {
             )
         }
 
-
         //дедлайн
         if (item.deadline != null) {
             tvDate.text = ViewUtils.convertMillisToDateString(item.deadline)
             tvDate.visibility = View.VISIBLE
         }
-
 
     }
 
@@ -115,23 +117,22 @@ class EditTodoFragment : Fragment() {
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.middle -> {
-                        editViewModel.changePriority(menuItem.title.toString())
+                        editViewModel.changePriority(requireContext(), menuItem.title.toString())
                         return@setOnMenuItemClickListener true
                     }
 
                     R.id.bottom -> {
-                        editViewModel.changePriority(menuItem.title.toString())
+                        editViewModel.changePriority(requireContext(), menuItem.title.toString())
                         return@setOnMenuItemClickListener true
                     }
 
                     else -> {
-                        editViewModel.changePriority(menuItem.title.toString())
+                        editViewModel.changePriority(requireContext(), menuItem.title.toString())
                         return@setOnMenuItemClickListener true
                     }
                 }
             }
             popupMenu.show()
-
         }
 
         tvSave.setOnClickListener {
@@ -146,7 +147,6 @@ class EditTodoFragment : Fragment() {
                 findNavController().popBackStack()
             }
         }
-
 
         val myCalendar = Calendar.getInstance()
         if (editViewModel.getDeadline() != null) {
@@ -176,7 +176,6 @@ class EditTodoFragment : Fragment() {
             }
         }
 
-
         toggle.setOnCheckedChangeListener { _, checked ->
             if (checked) {
                 openDatePicker()
@@ -189,7 +188,6 @@ class EditTodoFragment : Fragment() {
         tvDate.setOnClickListener {
             openDatePicker()
         }
-
     }
 
     private fun openDatePicker() {
@@ -198,7 +196,7 @@ class EditTodoFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             editViewModel.priorityText.collect { priorityText ->
                 if (priorityText == "!! Высокая") {
                     binding.tvPriority.text = priorityText
@@ -220,6 +218,4 @@ class EditTodoFragment : Fragment() {
             }
         }
     }
-
-
 }

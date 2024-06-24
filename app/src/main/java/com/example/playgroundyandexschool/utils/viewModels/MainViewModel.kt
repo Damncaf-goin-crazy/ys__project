@@ -67,7 +67,6 @@ class MainViewModel : ViewModel() {
             updateFilteredList()
         }
     }
-
 }
 
 data class UiState(

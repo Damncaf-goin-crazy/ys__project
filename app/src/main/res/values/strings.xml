@@ -17,9 +17,9 @@
     <string name="no_priority">Без приоритета</string>
     <string name="high_priority">Высокий приоритет</string>
     <string name="low_priority">Низкий приоритет</string>
-    <string name="no">Нет</string>
-    <string name="low">Низкая</string>
-    <string name="high">!! Высокая</string>
+    <string name="priority_no">Нет</string>
+    <string name="priority_low">Низкая</string>
+    <string name="priority_high">!! Высокая</string>
     <string name="empty_task_message">Что надо сделать...</string>
     <string name="go_back">Назад</string>
     <string name="default_theme">По умолчанию</string>
