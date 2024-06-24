@@ -1,6 +1,6 @@
 package com.example.playgroundyandexschool.fragments
 
-import SwipeToDeleteCallback
+import com.example.playgroundyandexschool.utils.classes.SwipeToDeleteCallback
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View

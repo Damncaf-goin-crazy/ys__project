@@ -1,12 +1,12 @@
+package com.example.playgroundyandexschool.utils.classes
+
 import android.content.Context
 import android.graphics.Canvas
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.utils.TodoItemsAdapter
-import com.example.playgroundyandexschool.utils.classes.TodoItem
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
-import com.example.playgroundyandexschool.utils.classes.ViewUtils
 
 
 class SwipeToDeleteCallback(

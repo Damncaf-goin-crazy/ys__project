@@ -5,7 +5,6 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.utils.TodoItemsRepository
-import com.example.playgroundyandexschool.utils.classes.Priority
 import com.example.playgroundyandexschool.utils.classes.TodoItem
 import com.example.playgroundyandexschool.utils.classes.getText
 import com.example.playgroundyandexschool.utils.classes.toPriority
