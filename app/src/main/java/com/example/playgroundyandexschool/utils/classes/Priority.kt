@@ -14,11 +14,3 @@ fun Priority.getText(context: Context): String {
         Priority.NO -> context.getString(R.string.priority_no)
     }
 }
-
-fun String.toPriority(context: Context): Priority {
-    return when (this) {
-        context.getString(R.string.priority_high) -> Priority.HIGH
-        context.getString(R.string.priority_low) -> Priority.LOW
-        else -> Priority.NO
-    }
-}

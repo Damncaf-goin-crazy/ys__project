@@ -5,14 +5,14 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.utils.TodoItemsRepository
+import com.example.playgroundyandexschool.utils.classes.Priority
 import com.example.playgroundyandexschool.utils.classes.TodoItem
 import com.example.playgroundyandexschool.utils.classes.getText
-import com.example.playgroundyandexschool.utils.classes.toPriority
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 
-class EditTodoVIewModel : ViewModel() {
+class EditTodoViewModel : ViewModel() {
     private var currentItem: TodoItem? = null
     private var temporaryItem: TodoItem? = null
     private val repository = TodoItemsRepository
@@ -61,17 +61,17 @@ class EditTodoVIewModel : ViewModel() {
         temporaryItem?.deadline = deadline
     }
 
-
-    fun changePriority(context: Context, text: String) {
-        temporaryItem?.priority = text.toPriority(context)
-        _priorityText.value = getPriorityText(context)
-    }
-
-    fun getPriorityText(context: Context): String {
-        return temporaryItem?.priority?.getText(context) ?: context.getString(R.string.priority_no)
-    }
-
     fun getDeadline(): Long? {
         return temporaryItem?.deadline
     }
+
+    fun changePriority(context: Context, priority: Priority) {
+        temporaryItem?.priority = priority
+        _priorityText.value = getPriorityText(context)
+    }
+
+    private fun getPriorityText(context: Context): String {
+        return temporaryItem?.priority?.getText(context) ?: context.getString(R.string.priority_no)
+    }
+
 }

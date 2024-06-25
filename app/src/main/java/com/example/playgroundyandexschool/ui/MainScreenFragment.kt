@@ -1,6 +1,5 @@
-package com.example.playgroundyandexschool.fragments
+package com.example.playgroundyandexschool.ui
 
-import com.example.playgroundyandexschool.utils.classes.SwipeToDeleteCallback
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.databinding.FragmentMainScreenBinding
 import com.example.playgroundyandexschool.utils.TodoItemsAdapter
+import com.example.playgroundyandexschool.utils.classes.SwipeToDeleteCallback
 import com.example.playgroundyandexschool.utils.viewModels.MainViewModel
 import kotlinx.coroutines.launch
 

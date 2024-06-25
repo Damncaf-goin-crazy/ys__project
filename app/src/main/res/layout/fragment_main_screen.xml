@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?back_primary"
-    tools:context=".fragments.MainScreenFragment">
+    tools:context=".ui.MainScreenFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
