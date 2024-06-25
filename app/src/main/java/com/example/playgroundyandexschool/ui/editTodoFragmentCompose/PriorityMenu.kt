@@ -1,5 +1,6 @@
 package com.example.playgroundyandexschool.ui.editTodoFragmentCompose
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -53,13 +54,14 @@ fun PriorityMenu(
         }
         DropdownMenu(
             expanded = dropDownMenuVisible,
-            onDismissRequest = { dropDownMenuVisible = false }
+            onDismissRequest = { dropDownMenuVisible = false },
+            modifier = Modifier.background(AppTodoTheme.colors.backElevated)
         ) {
             DropdownMenuItem(
                 text = {
                     Text(text = stringResource(R.string.priority_no))
                 },
-                onClick = { changePriority(Priority.NO); dropDownMenuVisible = false }
+                onClick = { changePriority(Priority.NO); dropDownMenuVisible = false },
             )
             DropdownMenuItem(
                 text = {

@@ -11,6 +11,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -20,10 +21,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.utils.classes.ViewUtils
+import com.example.playgroundyandexschool.utils.theme.AppTodoTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +65,7 @@ fun DeadlineLayout(
                 TextButton(onClick = { datePickerVisible = false }) {
                     Text(text = stringResource(R.string.cancel))
                 }
-            }
+            },
         ) {
             DatePicker(state = datePickerState)
         }
@@ -83,7 +86,9 @@ fun DeadlineLayout(
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.clickable {
                         datePickerVisible = true
-                    }
+                    },
+                    color = AppTodoTheme.colors.colorBlue
+
                 )
             }
         }
@@ -98,7 +103,15 @@ fun DeadlineLayout(
                     formattedDeadline = ""
                 }
 
-            }
+            },
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = AppTodoTheme.colors.colorBlue,
+                checkedTrackColor = Color(0x80007AFF),
+                uncheckedThumbColor = AppTodoTheme.colors.backElevated,
+                uncheckedTrackColor = AppTodoTheme.colors.supportOverlay,
+                uncheckedBorderColor = Color.Transparent,
+                checkedBorderColor = Color.Transparent,
+            )
         )
     }
 }
