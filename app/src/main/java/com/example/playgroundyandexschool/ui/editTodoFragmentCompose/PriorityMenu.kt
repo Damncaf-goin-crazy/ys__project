@@ -44,7 +44,7 @@ fun PriorityMenu(
         ) {
             Text(
                 text = stringResource(R.string.priority),
-                style = bodyTextStyle,
+                style = bodyTextStyle.copy(color = AppTodoTheme.colors.labelPrimary),
             )
             Text(
                 text = priorityText,

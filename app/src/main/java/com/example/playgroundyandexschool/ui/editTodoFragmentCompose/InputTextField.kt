@@ -15,6 +15,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.utils.theme.AppTodoTheme
+import com.example.playgroundyandexschool.utils.theme.bodyTextStyle
 
 @Composable
 fun InputTextField(
@@ -48,7 +49,8 @@ fun InputTextField(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent
-            )
+            ),
+            textStyle = bodyTextStyle.copy(color = AppTodoTheme.colors.labelPrimary)
         )
     }
 

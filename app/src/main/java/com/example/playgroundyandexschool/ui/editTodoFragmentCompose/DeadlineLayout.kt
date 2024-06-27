@@ -79,7 +79,7 @@ fun DeadlineLayout(
         Column {
             Text(
                 text = "Сделать до",
-                style = bodyTextStyle,
+                style = bodyTextStyle.copy(color = AppTodoTheme.colors.labelPrimary),
             )
             if (formattedDeadline != "") {
                 Text(
