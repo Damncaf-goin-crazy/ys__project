@@ -13,13 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.utils.theme.AppTodoTheme
+import com.example.playgroundyandexschool.utils.theme.buttonTextStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,10 +47,7 @@ fun TopToolbar(
             }) {
                 Text(
                     text = stringResource(R.string.save),
-                    style = TextStyle(
-                        color = AppTodoTheme.colors.colorBlue,
-                        fontSize = 14.sp
-                    ),
+                    style = buttonTextStyle.copy(color = AppTodoTheme.colors.colorBlue)
                 )
             }
 

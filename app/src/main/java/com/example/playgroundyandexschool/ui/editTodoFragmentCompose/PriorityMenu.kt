@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -21,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.utils.classes.Priority
 import com.example.playgroundyandexschool.utils.theme.AppTodoTheme
+import com.example.playgroundyandexschool.utils.theme.bodyTextStyle
+import com.example.playgroundyandexschool.utils.theme.subHeadTextStyle
 import kotlinx.coroutines.flow.StateFlow
 
 
@@ -43,11 +44,11 @@ fun PriorityMenu(
         ) {
             Text(
                 text = stringResource(R.string.priority),
-                style = MaterialTheme.typography.bodyLarge,
+                style = bodyTextStyle,
             )
             Text(
                 text = priorityText,
-                style = MaterialTheme.typography.labelMedium,
+                style = subHeadTextStyle,
                 color = if (priorityText == "!! Высокая") AppTodoTheme.colors.colorRed
                 else AppTodoTheme.colors.labelTertiary
             )

@@ -1,7 +1,18 @@
 package com.example.playgroundyandexschool.utils.theme
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -9,7 +20,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 class TodoAppColors(
     supportSeparator: Color,
@@ -152,4 +168,258 @@ fun AppTodoTheme(
     }
 }
 
+@Composable
+fun TextWithColorBox(text: String, textColor: Color, color: Color) {
+    Box(
+        modifier = Modifier
+            .size(100.dp, 100.dp)
+            .padding(8.dp)
+            .background(color = color),
+        contentAlignment = Alignment.BottomStart
 
+    ) {
+        Text(text = text, color = textColor, fontSize = 16.sp)
+    }
+}
+
+
+@Preview(name = "Light Theme Preview")
+@Composable
+fun LightAppTodoThemePreview() {
+    AppTodoTheme(darkTheme = false) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Color.LightGray,
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TextWithColorBox(
+                        "Support Separator",
+                        AppTodoTheme.colors.labelPrimary,
+                        AppTodoTheme.colors.supportSeparator
+                    )
+                    TextWithColorBox(
+                        "Support Overlay",
+                        AppTodoTheme.colors.labelPrimary,
+                        AppTodoTheme.colors.supportOverlay
+                    )
+
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TextWithColorBox(
+                        "Label Primary",
+                        AppTodoTheme.colors.colorWhite,
+                        AppTodoTheme.colors.labelPrimary
+                    )
+                    TextWithColorBox(
+                        "Label Secondary",
+                        AppTodoTheme.colors.colorWhite,
+                        AppTodoTheme.colors.labelSecondary
+                    )
+                    TextWithColorBox(
+                        "Label Tertiary",
+                        AppTodoTheme.colors.colorWhite,
+                        AppTodoTheme.colors.labelTertiary
+                    )
+                    TextWithColorBox(
+                        "Label Disable",
+                        AppTodoTheme.colors.labelPrimary,
+                        AppTodoTheme.colors.labelDisable
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TextWithColorBox(
+                        "Color Red",
+                        AppTodoTheme.colors.colorWhite,
+                        AppTodoTheme.colors.colorRed
+                    )
+                    TextWithColorBox(
+                        "Color Green",
+                        AppTodoTheme.colors.colorWhite,
+                        AppTodoTheme.colors.colorGreen
+                    )
+                    TextWithColorBox(
+                        "Color\nBlue",
+                        AppTodoTheme.colors.colorWhite,
+                        AppTodoTheme.colors.colorBlue
+                    )
+                    TextWithColorBox(
+                        "Color Gray",
+                        AppTodoTheme.colors.colorWhite,
+                        AppTodoTheme.colors.colorGray
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TextWithColorBox(
+                        "Color Gray Light",
+                        AppTodoTheme.colors.labelPrimary,
+                        AppTodoTheme.colors.colorGrayLight
+                    )
+                    TextWithColorBox(
+                        "Color White",
+                        AppTodoTheme.colors.labelPrimary,
+                        AppTodoTheme.colors.colorWhite
+                    )
+
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TextWithColorBox(
+                        "Back Primary",
+                        AppTodoTheme.colors.labelPrimary,
+                        AppTodoTheme.colors.backPrimary
+                    )
+                    TextWithColorBox(
+                        "Back Secondary",
+                        AppTodoTheme.colors.labelPrimary,
+                        AppTodoTheme.colors.backSecondary
+                    )
+                    TextWithColorBox(
+                        "Back Elevated",
+                        AppTodoTheme.colors.labelPrimary,
+                        AppTodoTheme.colors.backElevated
+                    )
+
+                }
+            }
+        }
+    }
+}
+
+
+@Preview(name = "Dark Theme Preview")
+@Composable
+fun DarkAppTodoThemePreview() {
+    AppTodoTheme(darkTheme = true) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Color.LightGray,
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TextWithColorBox(
+                        "Support Separator",
+                        AppTodoTheme.colors.backPrimary,
+                        AppTodoTheme.colors.supportSeparator
+                    )
+                    TextWithColorBox(
+                        "Support Overlay",
+                        AppTodoTheme.colors.labelPrimary,
+                        AppTodoTheme.colors.supportOverlay
+                    )
+
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TextWithColorBox(
+                        "Label Primary",
+                        AppTodoTheme.colors.backPrimary,
+                        AppTodoTheme.colors.labelPrimary
+                    )
+                    TextWithColorBox(
+                        "Label Secondary",
+                        AppTodoTheme.colors.backPrimary,
+                        AppTodoTheme.colors.labelSecondary
+                    )
+                    TextWithColorBox(
+                        "Label Tertiary",
+                        AppTodoTheme.colors.backPrimary,
+                        AppTodoTheme.colors.labelTertiary
+                    )
+                    TextWithColorBox(
+                        "Label Disable",
+                        AppTodoTheme.colors.backPrimary,
+                        AppTodoTheme.colors.labelDisable
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TextWithColorBox(
+                        "Color Red",
+                        AppTodoTheme.colors.colorWhite,
+                        AppTodoTheme.colors.colorRed
+                    )
+                    TextWithColorBox(
+                        "Color Green",
+                        AppTodoTheme.colors.colorWhite,
+                        AppTodoTheme.colors.colorGreen
+                    )
+                    TextWithColorBox(
+                        "Color Blue",
+                        AppTodoTheme.colors.colorWhite,
+                        AppTodoTheme.colors.colorBlue
+                    )
+                    TextWithColorBox(
+                        "Color Gray",
+                        AppTodoTheme.colors.colorWhite,
+                        AppTodoTheme.colors.colorGray
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TextWithColorBox(
+                        "Color Gray Light",
+                        AppTodoTheme.colors.labelPrimary,
+                        AppTodoTheme.colors.colorGrayLight
+                    )
+                    TextWithColorBox(
+                        "Color White",
+                        AppTodoTheme.colors.backPrimary,
+                        AppTodoTheme.colors.colorWhite
+                    )
+
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    TextWithColorBox(
+                        "Back Primary",
+                        AppTodoTheme.colors.labelPrimary,
+                        AppTodoTheme.colors.backPrimary
+                    )
+                    TextWithColorBox(
+                        "Back Secondary",
+                        AppTodoTheme.colors.labelPrimary,
+                        AppTodoTheme.colors.backSecondary
+                    )
+                    TextWithColorBox(
+                        "Back Elevated",
+                        AppTodoTheme.colors.labelPrimary,
+                        AppTodoTheme.colors.backElevated
+                    )
+
+                }
+            }
+        }
+    }
+}

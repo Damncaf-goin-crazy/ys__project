@@ -70,7 +70,7 @@ class MainScreenFragment : Fragment() {
 
     private fun observeViewModel(): Unit = with(binding) {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect { uiState ->
+            viewModel.uiStateMainScreen.collect { uiState ->
                 val iconRes =
                     if (uiState.todosVisible) R.drawable.visibility else R.drawable.visibility_off
                 ivVisibility.setImageResource(iconRes)

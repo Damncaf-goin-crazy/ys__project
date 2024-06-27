@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.utils.theme.AppTodoTheme
+import com.example.playgroundyandexschool.utils.theme.buttonTextStyle
 
 @Composable
 fun DeleteButton(onClick: () -> Unit, state: Boolean) {
@@ -37,7 +38,8 @@ fun DeleteButton(onClick: () -> Unit, state: Boolean) {
         Text(
             text = stringResource(R.string.delete),
             modifier = Modifier.padding(start = 4.dp),
-            color = if (state) AppTodoTheme.colors.colorRed else AppTodoTheme.colors.colorGray
+            color = if (state) AppTodoTheme.colors.colorRed else AppTodoTheme.colors.colorGray,
+            style = buttonTextStyle
         )
     }
 }

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("androidx.navigation.safeargs.kotlin")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 }
 
 android {
@@ -58,4 +59,6 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.recyclerview.swipedecorator)
     implementation(libs.bundles.compose)
+    implementation(libs.bundles.retrofit)
+    implementation(libs.converter.scalars)
 }

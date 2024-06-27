@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -27,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.utils.classes.ViewUtils
 import com.example.playgroundyandexschool.utils.theme.AppTodoTheme
+import com.example.playgroundyandexschool.utils.theme.bodyTextStyle
+import com.example.playgroundyandexschool.utils.theme.subHeadTextStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,17 +79,15 @@ fun DeadlineLayout(
         Column {
             Text(
                 text = "Сделать до",
-                style = MaterialTheme.typography.bodyLarge,
+                style = bodyTextStyle,
             )
             if (formattedDeadline != "") {
                 Text(
                     text = formattedDeadline,
-                    style = MaterialTheme.typography.labelMedium,
+                    style = subHeadTextStyle.copy(color = AppTodoTheme.colors.colorBlue),
                     modifier = Modifier.clickable {
                         datePickerVisible = true
-                    },
-                    color = AppTodoTheme.colors.colorBlue
-
+                    }
                 )
             }
         }
