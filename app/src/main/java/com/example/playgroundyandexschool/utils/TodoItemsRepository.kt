@@ -2,12 +2,9 @@ package com.example.playgroundyandexschool.utils
 
 import com.example.playgroundyandexschool.utils.classes.Priority
 import com.example.playgroundyandexschool.utils.classes.TodoItem
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 object TodoItemsRepository {
 
@@ -17,7 +14,6 @@ object TodoItemsRepository {
     var previousListSize = 0
 
     init {
-        CoroutineScope(Dispatchers.IO).launch {
             val list = mutableListOf<TodoItem>()
 
             // Item 1
@@ -108,7 +104,7 @@ object TodoItemsRepository {
             )
             list.add(item10)
             todoItemsList.value = list
-        }
+
     }
 
 
@@ -128,7 +124,6 @@ object TodoItemsRepository {
 
     fun saveTodoItem(todoItem: TodoItem?) {
         if (todoItem == null) return
-        CoroutineScope(Dispatchers.IO).launch {
             val currentList = todoItemsList.value.toMutableList()
             previousListSize = currentList.size
             val index = currentList.indexOfFirst { it.id == todoItem.id }
@@ -138,11 +133,9 @@ object TodoItemsRepository {
                 currentList[index] = todoItem
             }
             todoItemsList.value = currentList
-        }
     }
 
     fun removeTodoItem(id: String) {
-        CoroutineScope(Dispatchers.IO).launch {
             val currentList = todoItemsList.value.toMutableList()
             previousListSize = currentList.size
             val itemToRemove = currentList.find { it.id == id }
@@ -151,5 +144,5 @@ object TodoItemsRepository {
                 todoItemsList.value = currentList
             }
         }
-    }
+
 }
