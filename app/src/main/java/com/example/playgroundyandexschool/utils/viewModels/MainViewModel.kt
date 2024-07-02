@@ -1,6 +1,7 @@
 package com.example.playgroundyandexschool.utils.viewModels
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playgroundyandexschool.utils.TodoItemsRepository
 import com.example.playgroundyandexschool.utils.classes.TodoItem
@@ -11,17 +12,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application){
 
-    private val _uiState = MutableStateFlow(UiState(0, emptyList(), true))
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    private val _uiStateMainScreen = MutableStateFlow(UiState(0, emptyList(), true))
+    val uiStateMainScreen: StateFlow<UiState> = _uiStateMainScreen.asStateFlow()
     private val repository = TodoItemsRepository
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getTodoItems().collect { todoList ->
-                _uiState.update {
-                    _uiState.value.copy(
+                _uiStateMainScreen.update {
+                    _uiStateMainScreen.value.copy(
                         numDone = todoList.count { it.isCompleted },
                         currentList = todoList
                     )
@@ -32,9 +33,9 @@ class MainViewModel : ViewModel() {
     }
 
     fun toggleVisibility() {
-        val newVisibility = !_uiState.value.todosVisible
-        _uiState.update {
-            _uiState.value.copy(todosVisible = newVisibility)
+        val newVisibility = !_uiStateMainScreen.value.todosVisible
+        _uiStateMainScreen.update {
+            _uiStateMainScreen.value.copy(todosVisible = newVisibility)
         }
         updateFilteredList()
     }
@@ -44,14 +45,14 @@ class MainViewModel : ViewModel() {
     }
 
     fun updateFilteredList() {
-        val currentList = _uiState.value.currentList
-        val filteredList = if (_uiState.value.todosVisible) {
+        val currentList = _uiStateMainScreen.value.currentList
+        val filteredList = if (_uiStateMainScreen.value.todosVisible) {
             currentList
         } else {
             currentList.filter { !it.isCompleted }
         }
         val numDone = currentList.count { it.isCompleted }
-        _uiState.value = _uiState.value.copy(filteredList = filteredList, numDone = numDone)
+        _uiStateMainScreen.value = _uiStateMainScreen.value.copy(filteredList = filteredList, numDone = numDone)
     }
 
     fun deleteItem(item: TodoItem) {
@@ -67,6 +68,7 @@ class MainViewModel : ViewModel() {
             updateFilteredList()
         }
     }
+
 
 }
 

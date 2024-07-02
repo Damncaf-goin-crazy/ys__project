@@ -14,7 +14,7 @@ import com.example.playgroundyandexschool.utils.classes.TodoItem
 import com.example.playgroundyandexschool.utils.classes.ViewUtils
 
 class TodoItemsAdapter(
-    private val function: () -> Unit,
+    private val updateFunction: () -> Unit,
     private val onItemClicked: (String) -> Unit
 ) :
     ListAdapter<TodoItem, TodoItemsAdapter.TodoItemsViewHolder>(TodoItemDiffCallback()) {
@@ -67,7 +67,6 @@ class TodoItemsAdapter(
                     binding.tvTodo.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
             }
 
-
             binding.ivCheckbox.setOnClickListener {
                 todoItem.isCompleted = !todoItem.isCompleted
 
@@ -81,7 +80,7 @@ class TodoItemsAdapter(
                     binding.tvTodo.paintFlags =
                         binding.tvTodo.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                 }
-                function()
+                updateFunction()
             }
         }
     }

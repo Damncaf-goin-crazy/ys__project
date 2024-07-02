@@ -30,5 +30,4 @@ object ViewUtils {
             throw IllegalArgumentException("Attribute not found")
         }
     }
-
 }

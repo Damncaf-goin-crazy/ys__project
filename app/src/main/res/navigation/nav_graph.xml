@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainScreenFragment"
-        android:name="com.example.playgroundyandexschool.fragments.MainScreenFragment"
+        android:name="com.example.playgroundyandexschool.ui.MainScreenFragment"
         android:label="fragment_main_screen"
         tools:layout="@layout/fragment_main_screen">
         <action
@@ -21,7 +21,7 @@
     </fragment>
     <fragment
         android:id="@+id/editTodoFragment"
-        android:name="com.example.playgroundyandexschool.fragments.EditTodoFragment"
+        android:name="com.example.playgroundyandexschool.ui.EditTodoFragment"
         android:label="fragment_edit_todo"
         tools:layout="@layout/fragment_edit_todo">
         <argument

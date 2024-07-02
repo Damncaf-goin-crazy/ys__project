@@ -103,8 +103,8 @@ object TodoItemsRepository {
             deadline = null
         )
         list.add(item10)
-
         todoItemsList.value = list
+
     }
 
 
@@ -133,7 +133,6 @@ object TodoItemsRepository {
             currentList[index] = todoItem
         }
         todoItemsList.value = currentList
-
     }
 
     fun removeTodoItem(id: String) {
