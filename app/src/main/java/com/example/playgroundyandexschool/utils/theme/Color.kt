@@ -35,3 +35,6 @@ val ColorDarkWhite = Color(0xFFFFFFFF)
 val BackDarkPrimary = Color(0xFF161618)
 val BackDarkSecondary = Color(0xFF252528)
 val BackDarkElevated = Color(0xFF3C3C3F)
+
+// Additional colors
+val BlueForTrack = Color(0x80007AFF)

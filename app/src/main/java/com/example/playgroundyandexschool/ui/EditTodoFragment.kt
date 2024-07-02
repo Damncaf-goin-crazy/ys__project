@@ -22,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,10 +45,11 @@ import com.example.playgroundyandexschool.ui.editTodoFragmentCompose.DeleteButto
 import com.example.playgroundyandexschool.ui.editTodoFragmentCompose.InputTextField
 import com.example.playgroundyandexschool.ui.editTodoFragmentCompose.PriorityMenu
 import com.example.playgroundyandexschool.ui.editTodoFragmentCompose.TopToolbar
+import com.example.playgroundyandexschool.utils.classes.Priority
+import com.example.playgroundyandexschool.utils.classes.getText
 import com.example.playgroundyandexschool.utils.theme.AppTodoTheme
 import com.example.playgroundyandexschool.utils.theme.buttonTextStyle
 import com.example.playgroundyandexschool.utils.viewModels.EditTodoViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 
 
 class EditTodoFragment : Fragment() {
@@ -83,6 +86,7 @@ class EditTodoFragment : Fragment() {
     @Composable
     fun EditTodoScreen(editViewModel: EditTodoViewModel) {
         val scrollState = rememberScrollState()
+        val priorityText by editViewModel.priorityText.collectAsState()
 
         var text by remember { mutableStateOf(editViewModel.getItem().text) }
 
@@ -117,7 +121,7 @@ class EditTodoFragment : Fragment() {
                             priority
                         )
                     },
-                    priorityTextFlow = editViewModel.priorityText,
+                    priorityText = priorityText,
                 )
                 HorizontalDivider(thickness = 1.dp, color = AppTodoTheme.colors.supportSeparator)
                 Spacer(modifier = Modifier.height(12.dp))
@@ -143,10 +147,9 @@ class EditTodoFragment : Fragment() {
     @Composable
     fun PreviewEditTodoScreen() {
         val scrollState = rememberScrollState()
-        val priorityTextFlow = remember {
-            // Mock StateFlow for priority text
-            MutableStateFlow("!! Высокая")
-        }
+        val context = LocalContext.current
+        val priorityText = Priority.HIGH.getText(context)
+
         AppTodoTheme {
             Scaffold(
                 modifier = Modifier
@@ -194,7 +197,7 @@ class EditTodoFragment : Fragment() {
                     Spacer(modifier = Modifier.height(12.dp))
                     PriorityMenu(
                         changePriority = {},
-                        priorityTextFlow = priorityTextFlow,
+                        priorityText = priorityText,
                     )
                     HorizontalDivider(
                         thickness = 1.dp,

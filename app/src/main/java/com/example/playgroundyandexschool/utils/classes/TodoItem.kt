@@ -9,7 +9,7 @@ data class TodoItem(
     var deadline: Long?,
     var isCompleted: Boolean,
     val creationDate: Long,
-    val modificationDate: Long
+    val modificationDate: Long?
 ) {
     companion object {
         fun empty(): TodoItem = TodoItem(

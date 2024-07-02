@@ -30,6 +30,7 @@
     <string name="ready">Готово</string>
     <string name="cancel">Отмена</string>
     <string name="empty"> </string>
+    <string name="do_until">Сделать до</string>
 
 
 </resources>

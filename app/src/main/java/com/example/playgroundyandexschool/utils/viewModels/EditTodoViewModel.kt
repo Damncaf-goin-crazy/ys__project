@@ -2,14 +2,19 @@ package com.example.playgroundyandexschool.utils.viewModels
 
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.utils.TodoItemsRepository
 import com.example.playgroundyandexschool.utils.classes.Priority
 import com.example.playgroundyandexschool.utils.classes.TodoItem
 import com.example.playgroundyandexschool.utils.classes.getText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 
 class EditTodoViewModel : ViewModel() {
@@ -22,10 +27,12 @@ class EditTodoViewModel : ViewModel() {
     val priorityText: StateFlow<String> get() = _priorityText
 
     fun setId(context: Context, id: String) {
-        if (currentItem == null) {
-            currentItem = repository.getTodoItem(id)
-            temporaryItem = currentItem?.copy()
-            _priorityText.value = getPriorityText(context)
+        viewModelScope.launch(Dispatchers.IO){
+            if (currentItem == null) {
+                currentItem = repository.getTodoItem(id)
+                temporaryItem = currentItem?.copy()
+                _priorityText.value = getPriorityText(context)
+            }
         }
     }
 
@@ -39,19 +46,37 @@ class EditTodoViewModel : ViewModel() {
     }
 
     fun deleteItem() {
-        currentItem?.let { repository.removeTodoItem(it.id) }
+        viewModelScope.launch(Dispatchers.IO){
+            currentItem?.let { repository.removeTodoItem(it.id) }
+
+        }
     }
 
     fun getItem(): TodoItem {
         return currentItem ?: TodoItem.empty()
     }
 
-    fun saveItem() {
-        temporaryItem?.let {
-            currentItem = it
-            repository.saveTodoItem(currentItem)
+//    fun saveItem(){
+//        viewModelScope.launch(Dispatchers.IO){
+//            temporaryItem?.let {
+//                currentItem = it
+//                repository.saveTodoItem(currentItem)
+//            }
+//        }
+//    }
+
+fun saveItem(): Job {
+    return viewModelScope.launch(Dispatchers.IO) {
+        try {
+            temporaryItem?.let {
+                currentItem = it
+                repository.saveTodoItem(currentItem)
+            }
+        } catch (e: Exception) {
+            Log.e("EditTodoViewModel", "Exception: ${e.message}")
         }
     }
+}
 
     fun changeText(text: String) {
         temporaryItem?.text = text

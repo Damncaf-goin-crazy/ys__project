@@ -19,14 +19,20 @@ import androidx.navigation.NavController
 import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.utils.theme.AppTodoTheme
 import com.example.playgroundyandexschool.utils.theme.buttonTextStyle
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopToolbar(
     navController: NavController,
-    onSave: () -> Unit,
+    onSave: () -> Job,
     scrollState: ScrollState
 ) {
+    val scope = CoroutineScope(Dispatchers.Main)
+
     TopAppBar(
         title = {},
         navigationIcon = {
@@ -42,8 +48,11 @@ fun TopToolbar(
         },
         actions = {
             TextButton(onClick = {
-                onSave()
-                navController.popBackStack()
+                scope.launch {
+                    val saveJob = onSave()
+                    saveJob.join()
+                    navController.popBackStack()
+                }
             }) {
                 Text(
                     text = stringResource(R.string.save),

@@ -1,6 +1,5 @@
 package com.example.playgroundyandexschool.ui.editTodoFragmentCompose
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +19,6 @@ import com.example.playgroundyandexschool.utils.theme.buttonTextStyle
 
 @Composable
 fun DeleteButton(onClick: () -> Unit, state: Boolean) {
-    Log.d("112121", (state).toString())
 
     Row(verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier

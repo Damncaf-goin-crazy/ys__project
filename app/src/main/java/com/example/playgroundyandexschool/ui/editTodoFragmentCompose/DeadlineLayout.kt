@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.example.playgroundyandexschool.R
 import com.example.playgroundyandexschool.utils.classes.ViewUtils
 import com.example.playgroundyandexschool.utils.theme.AppTodoTheme
+import com.example.playgroundyandexschool.utils.theme.BlueForTrack
 import com.example.playgroundyandexschool.utils.theme.bodyTextStyle
 import com.example.playgroundyandexschool.utils.theme.subHeadTextStyle
 
@@ -78,7 +79,7 @@ fun DeadlineLayout(
     ) {
         Column {
             Text(
-                text = "Сделать до",
+                text = stringResource(R.string.do_until),
                 style = bodyTextStyle.copy(color = AppTodoTheme.colors.labelPrimary),
             )
             if (formattedDeadline != "") {
@@ -105,7 +106,7 @@ fun DeadlineLayout(
             },
             colors = SwitchDefaults.colors(
                 checkedThumbColor = AppTodoTheme.colors.colorBlue,
-                checkedTrackColor = Color(0x80007AFF),
+                checkedTrackColor = BlueForTrack,
                 uncheckedThumbColor = AppTodoTheme.colors.backElevated,
                 uncheckedTrackColor = AppTodoTheme.colors.supportOverlay,
                 uncheckedBorderColor = Color.Transparent,

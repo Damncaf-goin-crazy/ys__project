@@ -1,10 +1,21 @@
 package com.example.playgroundyandexschool.utils
 
-import com.example.playgroundyandexschool.utils.classes.Priority
+import android.util.Log
+import com.example.playgroundyandexschool.network.connection.MyConnectivityManager
+import com.example.playgroundyandexschool.network.networkAccess.TodoApi
+import com.example.playgroundyandexschool.network.networkClass.TodoItemDto
+import com.example.playgroundyandexschool.network.networkClass.toTodoItem
+import com.example.playgroundyandexschool.network.requests.PostItemRequest
 import com.example.playgroundyandexschool.utils.classes.TodoItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.util.concurrent.atomic.AtomicBoolean
 
 object TodoItemsRepository {
 
@@ -12,99 +23,50 @@ object TodoItemsRepository {
         MutableStateFlow(mutableListOf())
 
     var previousListSize = 0
+    private var revision: Int = 0
+    private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
 
     init {
-            val list = mutableListOf<TodoItem>()
+        repositoryScope.launch {
+            loadItems()
+        }
+    }
 
-            // Item 1
-            val item1 = TodoItem.empty().copy(
-                text = "Помыть посуду",
-                priority = Priority.HIGH,
-                deadline = 1719435600000L
-            )
-            list.add(item1)
+    suspend fun subscribeToInternet(
+        myConnectivityManager: MyConnectivityManager,
+        isConnected: AtomicBoolean
+    ) {
+        myConnectivityManager.connectionAsStateFlow.collect { connected ->
+            isConnected.set(connected)
+            if (connected) {
+                loadItems()
+            }
+        }
 
-            // Item 2
-            val item2 = TodoItem.empty().copy(
-                text = "Сходить в магазин",
-                priority = Priority.NO,
-                deadline = 1719435600000L
-            )
-            list.add(item2)
+    }
 
-            // Item 3
-            val item3 = TodoItem.empty().copy(
-                text = "Попробуй отметить Done правым свайпом, а потом удалить левым",
-                priority = Priority.LOW,
-                deadline = 1719435600000L
-            )
-            list.add(item3)
-
-            // Item 4
-            val item4 = TodoItem.empty().copy(
-                text = "Попробуй поменять дедлайн",
-                priority = Priority.NO,
-                deadline = null
-            )
-            list.add(item4)
-
-            // Item 5
-            val item5 = TodoItem.empty().copy(
-                text = "Начать бегать по утрам",
-                priority = Priority.LOW,
-                deadline = 1654416000000L
-            )
-            list.add(item5)
-
-            // Item 6
-            val item6 = TodoItem.empty().copy(
-                text = "Длинный текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный" +
-                        " текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный" +
-                        " текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный" +
-                        " текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный" +
-                        " текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный" +
-                        " текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный" +
-                        " текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный" +
-                        " текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный" +
-                        " текстДлинный текстДлинный текстДлинный текстДлинный текстДлинный текст",
-                priority = Priority.HIGH,
-                deadline = 1719435600000L
-            )
-            list.add(item6)
-
-            // Item 7
-            val item7 = TodoItem.empty().copy(
-                text = "Отправить домашку",
-                priority = Priority.LOW,
-                deadline = null
-            )
-            list.add(item7)
-
-            // Item 8
-            val item8 = TodoItem.empty().copy(
-                text = "Оплатить счета",
-                priority = Priority.NO,
-                deadline = 1719435600000L
-            )
-            list.add(item8)
-
-            // Item 9
-            val item9 = TodoItem.empty().copy(
-                text = "Сходить в зал",
-                priority = Priority.HIGH,
-                deadline = 1719435600000L
-            )
-            list.add(item9)
-
-            // Item 10
-            val item10 = TodoItem.empty().copy(
-                text = "Прибрать в квартире",
-                priority = Priority.LOW,
-                deadline = null
-            )
-            list.add(item10)
-            todoItemsList.value = list
-
+    suspend fun loadItems() {
+        try {
+            val response = TodoApi.retrofitService.getTodos()
+            Log.d("121212 - loadItems", "${response.body()}")
+            if (response.isSuccessful) {
+                response.body()?.let { getListResponse ->
+                    val items = getListResponse.list.map { it.toTodoItem() }.toMutableList()
+                    todoItemsList.value = items
+                    revision = getListResponse.revision
+                }
+            } else {
+                Log.e(
+                    "TodoItemsRepository1",
+                    "Error fetching todo list: ${response.code()} - ${response.message()}"
+                )
+            }
+        } catch (e: HttpException) {
+            Log.e("TodoItemsRepository1", "HTTP Exception: ${e.code()} - ${e.message()}")
+        } catch (e: Exception) {
+            Log.e("TodoItemsRepository1", "Exception: ${e.message}")
+        }
     }
 
 
@@ -112,9 +74,30 @@ object TodoItemsRepository {
         return todoItemsList.asStateFlow()
     }
 
-    fun getTodoItem(id: String): TodoItem? {
-        val item = todoItemsList.value.find { it.id == id }
-        return item
+    suspend fun getTodoItem(id: String): TodoItem? {
+        val localItem = todoItemsList.value.find { it.id == id }
+        if (localItem != null) {
+            return localItem
+        }
+
+        return try {
+            val response = TodoApi.retrofitService.getTodoItemById(id)
+            if (response.isSuccessful) {
+                response.body()?.element?.toTodoItem()
+            } else {
+                Log.e(
+                    "TodoItemsRepository2",
+                    "Error fetching todo item: ${response.code()} - ${response.message()}"
+                )
+                null
+            }
+        } catch (e: HttpException) {
+            Log.e("TodoItemsRepository2", "HTTP Exception: ${e.code()} - ${e.message()}")
+            null
+        } catch (e: Exception) {
+            Log.e("TodoItemsRepository2", "Exception: ${e.message}")
+            null
+        }
     }
 
     fun getItemCount(): Int {
@@ -122,27 +105,79 @@ object TodoItemsRepository {
         return currentList.size
     }
 
-    fun saveTodoItem(todoItem: TodoItem?) {
+    suspend fun saveTodoItem(todoItem: TodoItem?) {
         if (todoItem == null) return
-            val currentList = todoItemsList.value.toMutableList()
-            previousListSize = currentList.size
-            val index = currentList.indexOfFirst { it.id == todoItem.id }
+        val currentList = todoItemsList.value.toMutableList()
+        previousListSize = currentList.size
+        val index = currentList.indexOfFirst { it.id == todoItem.id }
+
+        try {
             if (index == -1) {
-                currentList.add(0, todoItem)
+                val response = TodoApi.retrofitService.addTodoItem(
+                    revision,
+                    PostItemRequest("ok", TodoItemDto.fromItem(todoItem))
+                )
+                if (response.isSuccessful) {
+                    revision += 1
+                    response.body()?.element?.let {
+                        val newItem = it.toTodoItem()
+                        currentList.add(0, newItem)
+                    }
+                } else {
+                    Log.e(
+                        "TodoItemsRepository3",
+                        "Error adding todo item: ${response.code()} - ${response.message()}"
+                    )
+                }
             } else {
-                currentList[index] = todoItem
+                val response = TodoApi.retrofitService.updateTodoItem(
+                    revision,
+                    todoItem.id,
+                    PostItemRequest("ok", TodoItemDto.fromItem(todoItem))
+                )
+                if (response.isSuccessful) {
+                    revision += 1
+                    response.body()?.element?.let {
+                        val updatedItem = it.toTodoItem()
+                        currentList[index] = updatedItem
+                    }
+                } else {
+                    Log.e(
+                        "TodoItemsRepository3",
+                        "Error updating todo item: ${response.code()} - ${response.message()}"
+                    )
+                }
             }
             todoItemsList.value = currentList
+        } catch (e: HttpException) {
+            Log.e("TodoItemsRepository3", "HTTP Exception: ${e.code()} - ${e.message()}")
+        } catch (e: Exception) {
+            Log.e("TodoItemsRepository3", "Exception: ${e.message}")
+        }
     }
 
-    fun removeTodoItem(id: String) {
-            val currentList = todoItemsList.value.toMutableList()
-            previousListSize = currentList.size
-            val itemToRemove = currentList.find { it.id == id }
-            if (itemToRemove != null) {
-                currentList.remove(itemToRemove)
-                todoItemsList.value = currentList
+    suspend fun removeTodoItem(id: String) {
+        val currentList = todoItemsList.value.toMutableList()
+        previousListSize = currentList.size
+        val itemToRemove = currentList.find { it.id == id }
+        if (itemToRemove != null) {
+            try {
+                val response = TodoApi.retrofitService.deleteTodoItem(revision, id)
+                if (response.isSuccessful) {
+                    revision += 1
+                    currentList.remove(itemToRemove)
+                    todoItemsList.value = currentList
+                } else {
+                    Log.e(
+                        "TodoItemsRepository4",
+                        "Error deleting todo item: ${response.code()} - ${response.message()}"
+                    )
+                }
+            } catch (e: HttpException) {
+                Log.e("TodoItemsRepository4", "HTTP Exception: ${e.code()} - ${e.message()}")
+            } catch (e: Exception) {
+                Log.e("TodoItemsRepository4", "Exception: ${e.message}")
             }
         }
-
+    }
 }

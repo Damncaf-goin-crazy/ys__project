@@ -46,8 +46,8 @@ class MainScreenFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
-        registerEvents()
         observeViewModel()
+        registerEvents()
         setupSwipeToDelete()
     }
 
@@ -81,6 +81,7 @@ class MainScreenFragment : Fragment() {
                 }
                 val completedText = getString(R.string.completed, uiState.numDone)
                 tvCompletedCounter.text = completedText
+
             }
         }
     }
