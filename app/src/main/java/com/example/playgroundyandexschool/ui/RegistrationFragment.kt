@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.playgroundyandexschool.data.local.sharedPreferences.SharedPreferencesHelper
 import com.example.playgroundyandexschool.databinding.FragmentRegistrationBinding
+import com.example.playgroundyandexschool.data.local.sharedPreferences.SharedPreferencesHelper
 import com.google.android.material.snackbar.Snackbar
 import com.yandex.authsdk.YandexAuthLoginOptions
 import com.yandex.authsdk.YandexAuthOptions
