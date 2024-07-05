@@ -15,7 +15,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
+        manifestPlaceholders["YANDEX_CLIENT_ID"] = "07d3c81536d64b6a877dbe39ae1d562d"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -29,11 +29,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -61,4 +61,7 @@ dependencies {
     implementation(libs.bundles.compose)
     implementation(libs.bundles.retrofit)
     implementation(libs.converter.scalars)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.authsdk)
 }

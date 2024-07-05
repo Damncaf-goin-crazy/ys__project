@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -40,21 +41,34 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.playgroundyandexschool.R
-import com.example.playgroundyandexschool.ui.editTodoFragmentCompose.DeadlineLayout
-import com.example.playgroundyandexschool.ui.editTodoFragmentCompose.DeleteButton
-import com.example.playgroundyandexschool.ui.editTodoFragmentCompose.InputTextField
-import com.example.playgroundyandexschool.ui.editTodoFragmentCompose.PriorityMenu
-import com.example.playgroundyandexschool.ui.editTodoFragmentCompose.TopToolbar
-import com.example.playgroundyandexschool.utils.classes.Priority
-import com.example.playgroundyandexschool.utils.classes.getText
+import com.example.playgroundyandexschool.ui.edit_todo_fragment_compose.DeadlineLayout
+import com.example.playgroundyandexschool.ui.edit_todo_fragment_compose.DeleteButton
+import com.example.playgroundyandexschool.ui.edit_todo_fragment_compose.InputTextField
+import com.example.playgroundyandexschool.ui.edit_todo_fragment_compose.PriorityMenu
+import com.example.playgroundyandexschool.ui.edit_todo_fragment_compose.TopToolbar
+import com.example.playgroundyandexschool.ui.models.Priority
+import com.example.playgroundyandexschool.ui.models.getText
 import com.example.playgroundyandexschool.utils.theme.AppTodoTheme
 import com.example.playgroundyandexschool.utils.theme.buttonTextStyle
-import com.example.playgroundyandexschool.utils.viewModels.EditTodoViewModel
+import com.example.playgroundyandexschool.ui.viewModels.EditTodoViewModel
 
+/**
+ * Фрагмент EditTodoFragment представляет собой экран редактирования задачи, включая текст задачи, приоритет и дедлайн.
+ */
 
 class EditTodoFragment : Fragment() {
     private val editViewModel: EditTodoViewModel by viewModels()
     private val navArgs: EditTodoFragmentArgs by navArgs()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                findNavController().popBackStack()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(callback)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?

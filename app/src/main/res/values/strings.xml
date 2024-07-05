@@ -6,6 +6,7 @@
     <string name="mark_not_completed">Пометить невыполненным</string>
     <string name="show_completed">Показать завершённые</string>
     <string name="hide_completed">Скрыть завершённые</string>
+    <string name="network_status">Состояние сети</string>
     <string name="more_info">Больше информации</string>
     <string name="add_new_task">Добавить новую задачу</string>
     <string name="close">Закрыть</string>
@@ -31,6 +32,9 @@
     <string name="cancel">Отмена</string>
     <string name="empty"> </string>
     <string name="do_until">Сделать до</string>
-
-
+    <string name="network_error_update_todo">Ошибка обновления. Подключитесь к сети</string>
+    <string name="network_error_add_todo">Ошибка добавления. Подключитесь к сети</string>
+    <string name="offline_message">Подключитесь к интернету, чтобы загрузить данные</string>
+    <string name="authorization_message">Авторизируйтесь, чтобы начать пользоваться приложением. Воспользуйтесь Яндекс ID или гостевым аккаунтом</string>
+    <string name="registration_button">registration button</string>
 </resources>
