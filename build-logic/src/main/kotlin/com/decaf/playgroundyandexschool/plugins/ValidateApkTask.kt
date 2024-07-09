@@ -11,9 +11,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
 
-abstract class ApkValidateTask : DefaultTask() {
-
-
+abstract class ValidateApkTask : DefaultTask() {
     @get:Input
     abstract val maxSize: Property<Int>
 
@@ -33,8 +31,8 @@ abstract class ApkValidateTask : DefaultTask() {
                     val size = it.length() / (1024 * 1024)
                     println("size = $size")
                     if (size > maxSize.get()) {
-                        api.sendMessage("Error! Size of current building apk file is $size, but should be < ${maxSize.get()}")
-                        throw GradleException("Size of current building apk file is $size, but should be < ${maxSize.get()}")
+                        api.sendMessage("Error! Size of current building apk file is $size, it should be < ${maxSize.get()}")
+                        throw GradleException("Size of current building apk file is $size, it should be < ${maxSize.get()}")
                     } else {
                         api.sendMessage("Size of current building apk file is $size")
                     }

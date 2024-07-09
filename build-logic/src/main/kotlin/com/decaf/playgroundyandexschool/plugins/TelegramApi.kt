@@ -1,4 +1,5 @@
 package com.decaf.playgroundyandexschool.plugins
+
 import io.ktor.client.HttpClient
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
@@ -11,21 +12,20 @@ import io.ktor.http.HttpHeaders
 import java.io.File
 
 private const val BASE_URL = "https://api.telegram.org"
+
 class TelegramApi(
     private val httpClient: HttpClient
 ) {
-
-
     private val token = "7311212309:AAFPQ2hf9CcfT46E4sypOYJ5LgL-q5tO-3I"
     private val chatId = "1273936283"
 
-    suspend fun uploadFile(file: File, fileName: String){
+    suspend fun uploadFile(file: File, fileName: String) {
 
-        val response = httpClient.post("$BASE_URL/bot${token}/sendDocument"){
+        val response = httpClient.post("$BASE_URL/bot${token}/sendDocument") {
             parameter("chat_id", chatId)
             setBody(
                 MultiPartFormDataContent(
-                    formData{
+                    formData {
                         append("document", file.readBytes(), Headers.build {
                             append(
                                 HttpHeaders.ContentDisposition,
@@ -37,16 +37,16 @@ class TelegramApi(
             )
         }
         println("Code = ${response.status.value}")
-        println("Desc = ${response}")
+        println("Desc = $response")
 
     }
 
-    suspend fun sendMessage(text:String) {
-        val response = httpClient.post("$BASE_URL/bot${token}/sendMessage"){
+    suspend fun sendMessage(text: String) {
+        val response = httpClient.post("$BASE_URL/bot${token}/sendMessage") {
             parameter("chat_id", chatId)
             setBody(
                 MultiPartFormDataContent(
-                    formData{
+                    formData {
                         append("text", text)
                     }
                 )
@@ -54,7 +54,7 @@ class TelegramApi(
         }
 
         println("Code = ${response.status.value}")
-        println("Desc = ${response}")
+        println("Desc = $response")
     }
 
 }

@@ -9,15 +9,15 @@ import org.gradle.api.Project
 import org.gradle.configurationcache.extensions.capitalized
 
 
-class UploadPlugin: Plugin<Project> {
+class UploadPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
 
         val extension = project.extensions.create("pluginExtension", PluginExtension::class.java)
-            ?: throw GradleException("extentions required")
 
-        val androidComponents = project.extensions.findByType(AndroidComponentsExtension::class.java)
-            ?: throw GradleException("'com.android.application' plugin required.")
+        val androidComponents =
+            project.extensions.findByType(AndroidComponentsExtension::class.java)
+                ?: throw GradleException("'com.android.application' plugin required.")
 
         val android = project.extensions.findByType(BaseAppModuleExtension::class.java)
             ?: throw GradleException("'com.android.application' plugin required.")
@@ -27,16 +27,18 @@ class UploadPlugin: Plugin<Project> {
             val apkDit = variant.artifacts.get(SingleArtifact.APK)
 
 
-            val uploadTask = project.tasks.register("uploadApkFor$capVariantName", UploadTask::class.java) {
-                apkDir.set(apkDit)
-                fileName.set("todolist-${variant.name}-${android.defaultConfig.versionName}.apk")
-            }
+            val uploadTask =
+                project.tasks.register("uploadApkFor$capVariantName", UploadTask::class.java) {
+                    apkDir.set(apkDit)
+                    fileName.set("todolist-${variant.name}-${android.defaultConfig.versionName}.apk")
+                }
 
-            val checkSizeTask = project.tasks.register("checkSizeFor$capVariantName", ApkValidateTask::class.java){
-                enabled = extension.enableSizeCheck.get()
-                apkDir.set(apkDit)
-                maxSize.set(extension.fileSizeLimitInMb.get())
-            }
+            val checkSizeTask =
+                project.tasks.register("checkSizeFor$capVariantName", ValidateApkTask::class.java) {
+                    enabled = extension.enableSizeCheck.get()
+                    apkDir.set(apkDit)
+                    maxSize.set(extension.fileSizeLimitInMb.get())
+                }
 
             uploadTask.configure {
                 dependsOn(checkSizeTask)
