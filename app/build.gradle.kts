@@ -1,8 +1,15 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("androidx.navigation.safeargs.kotlin")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
+    id("tg-plugin")
+}
+
+pluginExtension{
+    enableSizeCheck.set(true)
+    fileSizeLimitInMb.set(50)
 }
 
 android {
