@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         controller = getRootNavController()
 
         if (savedInstanceState != null) {
-            controller.restoreState(savedInstanceState.getBundle("state"))
+            controller.restoreState(savedInstanceState.getBundle(getString(R.string.state)))
         } else {
             val navHostFragment =
                 supportFragmentManager.findFragmentById(binding.navHostFragment.id)
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBundle("state", controller.saveState())
+        outState.putBundle(getString(R.string.state), controller.saveState())
     }
 
     override fun onDestroy() {

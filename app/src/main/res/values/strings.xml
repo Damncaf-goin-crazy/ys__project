@@ -37,4 +37,6 @@
     <string name="offline_message">Подключитесь к интернету, чтобы загрузить данные</string>
     <string name="authorization_message">Авторизируйтесь, чтобы начать пользоваться приложением. Воспользуйтесь Яндекс ID или гостевым аккаунтом</string>
     <string name="registration_button">registration button</string>
+    <string name="state">state</string>
+
 </resources>
