@@ -31,7 +31,7 @@ data class TodoItemDto(
         /**
          * Преобразует объект TodoItem в объект TodoItemDto.
          */
-        fun fromItem(toDoItem: TodoItem): TodoItemDto {
+        fun fromItem(toDoItem: TodoItem, id: String): TodoItemDto {
             return TodoItemDto(
                 id = toDoItem.id,
                 text = toDoItem.text,
@@ -49,7 +49,7 @@ data class TodoItemDto(
                         toDoItem.modificationDate
                     }
                 },
-                updatedBy = "id"
+                updatedBy = id
             )
         }
     }

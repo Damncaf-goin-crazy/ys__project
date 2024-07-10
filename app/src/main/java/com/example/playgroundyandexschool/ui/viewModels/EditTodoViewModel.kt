@@ -41,7 +41,9 @@ class EditTodoViewModel(application: Application) : AndroidViewModel(application
 
     fun deleteItem() {
         viewModelScope.launch(Dispatchers.IO) {
-            currentItem?.let { repository.removeTodoItem(it.id) }
+            currentItem?.let {
+                repository.removeTodoItem(it.id)
+            }
         }
     }
 

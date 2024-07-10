@@ -162,6 +162,7 @@ class MainScreenFragment : Fragment() {
 
 
     override fun onDestroyView() {
+        viewModel.syncOnDestroy()
         _binding = null
         super.onDestroyView()
     }

@@ -100,24 +100,29 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun deleteItem(item: TodoItem) {
         viewModelScope.launch(Dispatchers.IO) {
-            val dataState = repository.removeTodoItem(item.id)
-            handleDataState(dataState)
+            repository.removeTodoItem(item.id)
         }
     }
 
     fun changeDone(item: TodoItem, doneState: Boolean) {
         item.isCompleted = doneState
         viewModelScope.launch(Dispatchers.IO) {
-            val dataState = repository.saveTodoItem(item)
-            handleDataState(dataState)
+            repository.saveTodoItem(item)
             updateFilteredList()
         }
     }
 
     fun updateItemsData() {
         viewModelScope.launch(Dispatchers.IO) {
+            repository.syncLocalChangesWithBackend()
             val dataState = repository.loadItems()
             handleDataState(dataState)
+        }
+    }
+
+    fun syncOnDestroy(){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.syncLocalChangesWithBackend()
         }
     }
 
