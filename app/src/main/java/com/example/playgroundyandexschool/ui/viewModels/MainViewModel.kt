@@ -115,15 +115,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun updateItemsData() {
         viewModelScope.launch(Dispatchers.IO) {
             val dataState = repository.loadItems()
-            repository.syncLocalChangesWithBackend()
+            if (dataState is DataState.Ok) {
+                repository.syncLocalChangesWithBackend()
+            }
             handleDataState(dataState)
         }
     }
 
-    fun syncOnDestroy(){
+    fun syncOnDestroy() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.loadItems()
-            repository.syncLocalChangesWithBackend()
+            val dataState = repository.loadItems()
+            if (dataState is DataState.Ok) {
+                repository.syncLocalChangesWithBackend()
+            }
         }
     }
 

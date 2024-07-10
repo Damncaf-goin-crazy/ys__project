@@ -54,8 +54,10 @@ class TodoItemsRepository private constructor(context: Context) {
 
     init {
         repositoryScope.launch {
-            loadItems()
-            syncLocalChangesWithBackend()
+            val dataState = loadItems()
+            if (dataState is DataState.Ok) {
+                syncLocalChangesWithBackend()
+            }
         }
     }
 
@@ -67,8 +69,10 @@ class TodoItemsRepository private constructor(context: Context) {
         myConnectivityManager.connectionAsStateFlow.collect { connected ->
             isConnected.set(connected)
             if (connected) {
-                loadItems()
-                syncLocalChangesWithBackend()
+                val dataState = loadItems()
+                if (dataState is DataState.Ok) {
+                    syncLocalChangesWithBackend()
+                }
             }
         }
     }
