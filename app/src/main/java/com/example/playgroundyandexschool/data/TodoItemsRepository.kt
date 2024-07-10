@@ -54,8 +54,8 @@ class TodoItemsRepository private constructor(context: Context) {
 
     init {
         repositoryScope.launch {
-            syncLocalChangesWithBackend()
             loadItems()
+            syncLocalChangesWithBackend()
         }
     }
 
@@ -67,8 +67,8 @@ class TodoItemsRepository private constructor(context: Context) {
         myConnectivityManager.connectionAsStateFlow.collect { connected ->
             isConnected.set(connected)
             if (connected) {
-                syncLocalChangesWithBackend()
                 loadItems()
+                syncLocalChangesWithBackend()
             }
         }
     }
@@ -78,9 +78,13 @@ class TodoItemsRepository private constructor(context: Context) {
             val response = TodoApi.retrofitService.getTodos(sharedPreferencesHelper.getHeader())
             if (response.isSuccessful) {
                 response.body()?.let { getListResponse ->
-                    val items = getListResponse.list.map { it.toTodoItem() }.toMutableList()
+                    val serverItems = getListResponse.list.map { it.toTodoItem() }
+                    val localItems = todoListDao.getList().map { it.toItem() }
+
+                    val mergedItems = mergeItems(localItems, serverItems)
+
                     revision = getListResponse.revision
-                    todoListDao.insertList(items.map { ToDoItemEntity.fromItem(it) })
+                    todoListDao.insertList(mergedItems.map { ToDoItemEntity.fromItem(it) })
                 }
                 reloads = 0
                 DataState.Ok
@@ -101,6 +105,36 @@ class TodoItemsRepository private constructor(context: Context) {
             reloads = 0
             DataState.Error("Loading items failed after $MAX_RELOADS attempts. All changes will be saved locally")
         }
+    }
+
+    private fun mergeItems(
+        localItems: List<TodoItem>,
+        serverItems: List<TodoItem>
+    ): List<TodoItem> {
+        val mergedItems = mutableListOf<TodoItem>()
+        val serverItemMap = serverItems.associateBy { it.id }
+        val localItemMap = localItems.associateBy { it.id }
+
+        serverItems.forEach { serverItem ->
+            val localItem = localItemMap[serverItem.id]
+            val localDate: Long = if (localItem != null) {
+                localItem.modificationDate ?: localItem.creationDate
+            } else {
+                0
+            }
+            val serverDate: Long = serverItem.modificationDate ?: serverItem.creationDate
+            if (localItem == null || serverDate > localDate) {
+                mergedItems.add(serverItem)
+            }
+        }
+
+        localItems.forEach { localItem ->
+            if (!serverItemMap.containsKey(localItem.id)) {
+                mergedItems.add(localItem)
+            }
+        }
+
+        return mergedItems
     }
 
     suspend fun syncLocalChangesWithBackend(): DataState {
