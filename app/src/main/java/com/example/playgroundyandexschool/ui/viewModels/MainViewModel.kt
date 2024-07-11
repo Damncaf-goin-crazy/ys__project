@@ -10,6 +10,7 @@ import com.example.playgroundyandexschool.ui.models.UiContent
 import com.example.playgroundyandexschool.ui.models.UiContent.UiState
 import com.example.playgroundyandexschool.utils.MyConnectivityManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -114,9 +115,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateItemsData() {
         viewModelScope.launch(Dispatchers.IO) {
-            val dataState = repository.loadItems()
+            val loadItemsDeferred = async { repository.loadItems() }
+            val dataState = loadItemsDeferred.await()
             if (dataState is DataState.Ok) {
-                repository.syncLocalChangesWithBackend()
+                val syncDeferred = async { repository.syncLocalChangesWithBackend() }
+                syncDeferred.await()
             }
             handleDataState(dataState)
         }
@@ -124,9 +127,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun syncOnDestroy() {
         viewModelScope.launch(Dispatchers.IO) {
-            val dataState = repository.loadItems()
+            val loadItemsDeferred = async { repository.loadItems() }
+            val dataState = loadItemsDeferred.await()
             if (dataState is DataState.Ok) {
-                repository.syncLocalChangesWithBackend()
+                val syncDeferred = async { repository.syncLocalChangesWithBackend() }
+                syncDeferred.await()
             }
         }
     }
