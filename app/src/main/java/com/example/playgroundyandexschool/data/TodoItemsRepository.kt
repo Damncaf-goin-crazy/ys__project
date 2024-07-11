@@ -33,9 +33,7 @@ class TodoItemsRepository private constructor(context: Context) {
     private val sharedPreferencesHelper = SharedPreferencesHelper.getInstance(context)
 
     private val db = Room.databaseBuilder(
-        context.applicationContext,
-        TodoListDatabase::class.java,
-        "todo_list_database"
+        context.applicationContext, TodoListDatabase::class.java, "todo_list_database"
     ).build()
     private val todoListDao: TodoListDao = db.dao
 
@@ -44,12 +42,10 @@ class TodoItemsRepository private constructor(context: Context) {
     private var reloads = 0
     private val MAX_RELOADS = 4
 
-    private val _todoItemsFlow: Flow<List<TodoItem>> = todoListDao.getListAsFlow()
-        .map { entityList -> entityList.map { it.toItem() } }
+    private val _todoItemsFlow: Flow<List<TodoItem>> =
+        todoListDao.getListAsFlow().map { entityList -> entityList.map { it.toItem() } }
     private val todoItemsFlow: StateFlow<List<TodoItem>> = _todoItemsFlow.stateIn(
-        scope = repositoryScope,
-        started = SharingStarted.Eagerly,
-        initialValue = emptyList()
+        scope = repositoryScope, started = SharingStarted.Eagerly, initialValue = emptyList()
     )
 
     init {
@@ -61,8 +57,7 @@ class TodoItemsRepository private constructor(context: Context) {
 
 
     suspend fun subscribeToInternet(
-        myConnectivityManager: MyConnectivityManager,
-        isConnected: AtomicBoolean
+        myConnectivityManager: MyConnectivityManager, isConnected: AtomicBoolean
     ) {
 
         myConnectivityManager.connectionAsStateFlow.collect { connected ->
@@ -109,8 +104,7 @@ class TodoItemsRepository private constructor(context: Context) {
     }
 
     private fun mergeItems(
-        localItems: List<TodoItem>,
-        serverItems: List<TodoItem>
+        localItems: List<TodoItem>, serverItems: List<TodoItem>
     ): List<TodoItem> {
         val mergedItems = mutableListOf<TodoItem>()
         val serverItemMap = serverItems.associateBy { it.id }
@@ -146,9 +140,7 @@ class TodoItemsRepository private constructor(context: Context) {
             val todoDtoItems = todoItems.map { TodoItemDto.fromItem(it, userId) }
 
             val response = TodoApi.retrofitService.updateTodoList(
-                sharedPreferencesHelper.getHeader(),
-                revision,
-                UpdateListRequest("ok", todoDtoItems)
+                sharedPreferencesHelper.getHeader(), revision, UpdateListRequest("ok", todoDtoItems)
 
             )
             if (response.isSuccessful) {
