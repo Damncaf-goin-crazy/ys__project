@@ -4,27 +4,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.playgroundyandexschool.databinding.FragmentRegistrationBinding
 import com.example.playgroundyandexschool.data.local.sharedPreferences.SharedPreferencesHelper
+import com.example.playgroundyandexschool.databinding.FragmentRegistrationBinding
 import com.google.android.material.snackbar.Snackbar
 import com.yandex.authsdk.YandexAuthLoginOptions
 import com.yandex.authsdk.YandexAuthOptions
 import com.yandex.authsdk.YandexAuthResult
 import com.yandex.authsdk.YandexAuthSdk
 import com.yandex.authsdk.YandexAuthToken
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * Фрагмент RegistrationFragment представляет собой экран регистрации пользователя.
  */
+@AndroidEntryPoint
 class RegistrationFragment : Fragment() {
     private var _binding: FragmentRegistrationBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var sdk: YandexAuthSdk
-    private lateinit var launcher: ActivityResultLauncher<YandexAuthLoginOptions>
+    @Inject
+    lateinit var sharedPreferencesHelper: SharedPreferencesHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,13 +38,9 @@ class RegistrationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sdk = YandexAuthSdk.create(YandexAuthOptions(requireContext()))
-        launcher = registerForActivityResult(sdk.contract) { result -> handleResult(result) }
-        registerEvents()
-    }
-
-    private fun registerEvents(): Unit = with(binding) {
-        loginWithYandexButton.setOnClickListener {
+        val sdk = YandexAuthSdk.create(YandexAuthOptions(requireContext()))
+        val launcher = registerForActivityResult(sdk.contract) { result -> handleResult(result) }
+        binding.loginWithYandexButton.setOnClickListener {
             val loginOptions = YandexAuthLoginOptions()
             launcher.launch(loginOptions)
         }
@@ -58,7 +56,6 @@ class RegistrationFragment : Fragment() {
 
     private fun onSuccessAuth(token: YandexAuthToken) {
         val tokenValue = token.value
-        val sharedPreferencesHelper = SharedPreferencesHelper.getInstance(requireContext())
         sharedPreferencesHelper.saveToken(tokenValue)
         Snackbar.make(binding.root, "Login successful", Snackbar.LENGTH_LONG).show()
         findNavController().navigate(RegistrationFragmentDirections.loginFragmentToMain())

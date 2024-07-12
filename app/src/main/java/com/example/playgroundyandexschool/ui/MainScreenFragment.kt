@@ -18,11 +18,13 @@ import com.example.playgroundyandexschool.ui.recycler.SwipeToDeleteCallback
 import com.example.playgroundyandexschool.ui.recycler.TodoItemsAdapter
 import com.example.playgroundyandexschool.ui.viewModels.MainViewModel
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /**
  * Фрагмент MainScreenFragment отображает основной экран тудулиста.
  */
+@AndroidEntryPoint
 class MainScreenFragment : Fragment() {
 
     private var _binding: FragmentMainScreenBinding? = null

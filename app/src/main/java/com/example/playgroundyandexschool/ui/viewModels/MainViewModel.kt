@@ -1,7 +1,6 @@
 package com.example.playgroundyandexschool.ui.viewModels
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playgroundyandexschool.data.TodoItemsRepository
 import com.example.playgroundyandexschool.ui.models.DataState
@@ -9,6 +8,7 @@ import com.example.playgroundyandexschool.ui.models.TodoItem
 import com.example.playgroundyandexschool.ui.models.UiContent
 import com.example.playgroundyandexschool.ui.models.UiContent.UiState
 import com.example.playgroundyandexschool.utils.MyConnectivityManager
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,11 +17,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
+import javax.inject.Inject
 
 /**
  * Класс MainViewModel представляет основную ViewModel для управления состоянием экрана.
  */
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val repository: TodoItemsRepository,
+    private val myConnectivityManager: MyConnectivityManager
+) : ViewModel() {
 
     private val isConnected: AtomicBoolean = AtomicBoolean(true)
 
@@ -36,9 +41,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         )
     )
     val uiStateMainScreen: StateFlow<UiContent> = _uiStateMainScreen.asStateFlow()
-
-    private val repository = TodoItemsRepository.getInstance(application)
-    private val myConnectivityManager = MyConnectivityManager(application, viewModelScope)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -58,7 +60,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            repository.subscribeToInternet(myConnectivityManager, isConnected)
+            repository.subscribeToInternet(isConnected)
         }
 
         viewModelScope.launch {

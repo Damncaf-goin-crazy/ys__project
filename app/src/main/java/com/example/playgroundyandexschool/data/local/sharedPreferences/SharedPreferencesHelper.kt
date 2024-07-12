@@ -32,14 +32,4 @@ class SharedPreferencesHelper(context: Context) {
 
     val userId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
 
-    companion object {
-        private var instance: SharedPreferencesHelper? = null
-
-        fun getInstance(context: Context): SharedPreferencesHelper {
-            return instance ?: synchronized(this) {
-                instance ?: SharedPreferencesHelper(context).also { instance = it }
-            }
-        }
-    }
-
 }

@@ -1,22 +1,17 @@
 package com.example.playgroundyandexschool.data
 
-import android.content.Context
-import androidx.room.Room
 import com.example.playgroundyandexschool.data.local.sharedPreferences.SharedPreferencesHelper
-import com.example.playgroundyandexschool.data.network.TodoApi
+import com.example.playgroundyandexschool.data.network.TodoApiService
 import com.example.playgroundyandexschool.data.network.models.TodoItemDto
 import com.example.playgroundyandexschool.data.network.models.requests.UpdateListRequest
 import com.example.playgroundyandexschool.data.network.models.toTodoItem
 import com.example.playgroundyandexschool.data.room.ToDoItemEntity
 import com.example.playgroundyandexschool.data.room.TodoListDao
-import com.example.playgroundyandexschool.data.room.TodoListDatabase
 import com.example.playgroundyandexschool.data.room.toItem
 import com.example.playgroundyandexschool.ui.models.DataState
 import com.example.playgroundyandexschool.ui.models.TodoItem
 import com.example.playgroundyandexschool.utils.MyConnectivityManager
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,23 +19,23 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Репозиторий для управления списком задач, включая загрузку, сохранение и удаление задач.
  */
-class TodoItemsRepository private constructor(context: Context) {
-
-    private val sharedPreferencesHelper = SharedPreferencesHelper.getInstance(context)
-
-    private val db = Room.databaseBuilder(
-        context.applicationContext, TodoListDatabase::class.java, "todo_list_database"
-    ).build()
-    private val todoListDao: TodoListDao = db.dao
+@Singleton
+class TodoItemsRepository @Inject constructor(
+    private val sharedPreferencesHelper: SharedPreferencesHelper,
+    private val todoListDao: TodoListDao,
+    private val myConnectivityManager: MyConnectivityManager,
+    private val service: TodoApiService,
+    repositoryScope: CoroutineScope
+) {
 
     private var revision: Int = 0
-    private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var reloads = 0
-    private val MAX_RELOADS = 4
 
     private val _todoItemsFlow: Flow<List<TodoItem>> =
         todoListDao.getListAsFlow().map { entityList -> entityList.map { it.toItem() } }
@@ -56,9 +51,7 @@ class TodoItemsRepository private constructor(context: Context) {
     }
 
 
-    suspend fun subscribeToInternet(
-        myConnectivityManager: MyConnectivityManager, isConnected: AtomicBoolean
-    ) {
+    suspend fun subscribeToInternet(isConnected: AtomicBoolean) {
 
         myConnectivityManager.connectionAsStateFlow.collect { connected ->
             isConnected.set(connected)
@@ -71,7 +64,7 @@ class TodoItemsRepository private constructor(context: Context) {
 
     suspend fun loadItems(): DataState {
         return try {
-            val response = TodoApi.retrofitService.getTodos(sharedPreferencesHelper.getHeader())
+            val response = service.getTodos(sharedPreferencesHelper.getHeader())
             if (response.isSuccessful) {
                 response.body()?.let { getListResponse ->
                     val serverItems = getListResponse.list.map { it.toTodoItem() }
@@ -139,7 +132,7 @@ class TodoItemsRepository private constructor(context: Context) {
             val todoItems = localItems.map { it.toItem() }
             val todoDtoItems = todoItems.map { TodoItemDto.fromItem(it, userId) }
 
-            val response = TodoApi.retrofitService.updateTodoList(
+            val response = service.updateTodoList(
                 sharedPreferencesHelper.getHeader(), revision, UpdateListRequest("ok", todoDtoItems)
 
             )
@@ -204,15 +197,7 @@ class TodoItemsRepository private constructor(context: Context) {
         }
     }
 
-    companion object {
-        private var instance: TodoItemsRepository? = null
-
-        fun getInstance(context: Context): TodoItemsRepository {
-            return instance ?: synchronized(this) {
-                instance ?: TodoItemsRepository(context).also { instance = it }
-            }
-        }
+    private companion object {
+        private const val MAX_RELOADS = 4
     }
-
-
 }

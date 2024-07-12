@@ -17,6 +17,8 @@ navigationUiKtx = "2.7.7"
 okhttp = "4.12.0"
 recyclerviewSwipedecorator = "1.4"
 ktor = "2.3.9"
+room = "2.6.1"
+
 
 
 #compose
@@ -80,7 +82,12 @@ ktor-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation"
 ktor-serialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
 
+#Room
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
+#Hilt
 
 
 
@@ -93,5 +100,6 @@ jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = 
 compose = ["activity-compose", "material3", "compose-bom", "ui", "ui-graphics", "ui-tooling", "ui-tooling-preview", "coil", "androidx-lifecycle-viewmodel-compose", "navigation"]
 retrofit = ["retrofit", "converter-scalars", "retrofit2-kotlinx-serialization-converter", "kotlinx-serialization-json", "okhttp", "logging-interceptor", "converter-gson"]
 ktor = ["ktor-okhttp", "ktor-negotiation", "ktor-serialization", "ktor-logging"]
+room = ["room-runtime", "room-ktx"]
 
 

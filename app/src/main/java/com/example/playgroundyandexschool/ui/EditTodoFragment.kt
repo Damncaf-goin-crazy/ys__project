@@ -48,14 +48,16 @@ import com.example.playgroundyandexschool.ui.edit_todo_fragment_compose.Priority
 import com.example.playgroundyandexschool.ui.edit_todo_fragment_compose.TopToolbar
 import com.example.playgroundyandexschool.ui.models.Priority
 import com.example.playgroundyandexschool.ui.models.getText
+import com.example.playgroundyandexschool.ui.viewModels.EditTodoViewModel
 import com.example.playgroundyandexschool.utils.theme.AppTodoTheme
 import com.example.playgroundyandexschool.utils.theme.buttonTextStyle
-import com.example.playgroundyandexschool.ui.viewModels.EditTodoViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Фрагмент EditTodoFragment представляет собой экран редактирования задачи, включая текст задачи, приоритет и дедлайн.
  */
 
+@AndroidEntryPoint
 class EditTodoFragment : Fragment() {
     private val editViewModel: EditTodoViewModel by viewModels()
     private val navArgs: EditTodoFragmentArgs by navArgs()

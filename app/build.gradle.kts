@@ -6,6 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
     id("tg-plugin")
     id("com.google.devtools.ksp") version "2.0.0-1.0.21"
+    id("com.google.dagger.hilt.android")
 }
 
 pluginExtension{
@@ -68,9 +69,8 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.authsdk)
-
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
-
+    implementation(libs.bundles.room)
+    ksp(libs.room.compiler)
+    implementation("com.google.dagger:hilt-android:2.48")
+    ksp("com.google.dagger:hilt-android-compiler:2.48")
 }
