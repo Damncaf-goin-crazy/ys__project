@@ -1,4 +1,7 @@
 package com.example.playgroundyandexschool.ui.models
 
-class Mode {
+enum class Mode {
+    NIGHT,
+    LIGHT,
+    SYSTEM
 }

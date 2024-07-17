@@ -75,6 +75,11 @@ class MainScreenFragment : Fragment() {
             viewModel.toggleVisibility()
         }
 
+        ivSettings.setOnClickListener {
+            val action = MainScreenFragmentDirections.mainToSettings()
+            findNavController().navigate(action)
+        }
+
     }
 
     private fun observeViewModel() {
