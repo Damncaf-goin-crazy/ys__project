@@ -1,6 +1,5 @@
 package com.example.playgroundyandexschool.ui.edit_todo_fragment_compose
 
-import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,7 +18,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.playgroundyandexschool.R
@@ -67,7 +65,9 @@ fun PriorityMenu(
             Text(
                 text = priorityText,
                 style = subHeadTextStyle,
-                color = if (priorityText == stringResource(R.string.priority_high)) AppTodoTheme.colors.colorRed.copy(alpha = priorityHighOpacity.value)
+                color = if (priorityText == stringResource(R.string.priority_high)) AppTodoTheme.colors.colorRed.copy(
+                    alpha = priorityHighOpacity.value
+                )
                 else AppTodoTheme.colors.labelTertiary
             )
         }
@@ -96,28 +96,28 @@ fun PriorityMenu(
                             }
                             .padding(vertical = 8.dp)
                     )
-                Text(
-                    text = stringResource(R.string.priority_low),
-                    style = bodyTextStyle,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            changePriority(Priority.LOW)
-                            dropDownMenuVisible = false
-                        }
-                        .padding(vertical = 8.dp)
-                )
-                Text(
-                    text = stringResource(R.string.priority_high),
-                    style = bodyTextStyle.copy(color = AppTodoTheme.colors.colorRed),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            changePriority(Priority.HIGH)
-                            dropDownMenuVisible = false
-                        }
-                        .padding(vertical = 8.dp)
-                )
+                    Text(
+                        text = stringResource(R.string.priority_low),
+                        style = bodyTextStyle,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                changePriority(Priority.LOW)
+                                dropDownMenuVisible = false
+                            }
+                            .padding(vertical = 8.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.priority_high),
+                        style = bodyTextStyle.copy(color = AppTodoTheme.colors.colorRed),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                changePriority(Priority.HIGH)
+                                dropDownMenuVisible = false
+                            }
+                            .padding(vertical = 8.dp)
+                    )
                 }
             }
         }

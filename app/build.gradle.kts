@@ -9,7 +9,7 @@ plugins {
     id("com.google.dagger.hilt.android")
 }
 
-pluginExtension{
+pluginExtension {
     enableSizeCheck.set(true)
     fileSizeLimitInMb.set(50)
 }
@@ -71,6 +71,10 @@ dependencies {
     implementation(libs.authsdk)
     implementation(libs.bundles.room)
     ksp(libs.room.compiler)
-    implementation("com.google.dagger:hilt-android:2.48")
-    ksp("com.google.dagger:hilt-android-compiler:2.48")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.div)
+    implementation(libs.div.core)
+    implementation(libs.div.json)
+    implementation("com.yandex.div:picasso:30.8.0")
 }

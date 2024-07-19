@@ -25,6 +25,9 @@
         <action
             android:id="@+id/main_to_settings"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/main_to_div"
+            app:destination="@id/divKitFragment" />
     </fragment>
     <fragment
         android:id="@+id/editTodoFragment"
@@ -51,4 +54,8 @@
         android:name="com.example.playgroundyandexschool.ui.settings.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/divKitFragment"
+        android:name="com.example.playgroundyandexschool.ui.divKit.DivKitFragment"
+        android:label="DivKitFragment" />
 </navigation>

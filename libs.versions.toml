@@ -18,7 +18,8 @@ okhttp = "4.12.0"
 recyclerviewSwipedecorator = "1.4"
 ktor = "2.3.9"
 room = "2.6.1"
-
+hilt = "2.48"
+divKit = "30.8.0"
 
 
 #compose
@@ -88,8 +89,13 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
 #Hilt
+hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 
-
+#DivKit
+div = { group = "com.yandex.div", name = "div", version.ref = "divKit" }
+div-json = { group = "com.yandex.div", name = "div-json", version.ref = "divKit" }
+div-core = { group = "com.yandex.div", name = "div-core", version.ref = "divKit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

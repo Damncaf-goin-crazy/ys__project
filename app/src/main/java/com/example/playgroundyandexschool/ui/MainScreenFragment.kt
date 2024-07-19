@@ -80,6 +80,11 @@ class MainScreenFragment : Fragment() {
             findNavController().navigate(action)
         }
 
+        btnDivKit.setOnClickListener {
+            val action = MainScreenFragmentDirections.mainToDiv()
+            findNavController().navigate(action)
+        }
+
     }
 
     private fun observeViewModel() {
