@@ -99,30 +99,42 @@ class TodoItemsRepository @Inject constructor(
     private fun mergeItems(
         localItems: List<TodoItem>, serverItems: List<TodoItem>
     ): List<TodoItem> {
-        val mergedItems = mutableListOf<TodoItem>()
-        val serverItemMap = serverItems.associateBy { it.id }
-        val localItemMap = localItems.associateBy { it.id }
 
-        serverItems.forEach { serverItem ->
-            val localItem = localItemMap[serverItem.id]
-            val localDate: Long = if (localItem != null) {
-                localItem.modificationDate ?: localItem.creationDate
-            } else {
-                0
-            }
-            val serverDate: Long = serverItem.modificationDate ?: serverItem.creationDate
-            if (localItem == null || serverDate > localDate) {
-                mergedItems.add(serverItem)
-            }
+//        val mergedItems = mutableListOf<TodoItem>()
+//        val serverItemMap = serverItems.associateBy { it.id }
+//        val localItemMap = localItems.associateBy { it.id }
+//
+//        val currentTime = System.currentTimeMillis()
+//        val twelveHoursInMillis = 12 * 60 * 60 * 1000
+//
+//
+//        serverItems.forEach { serverItem ->
+//            val localItem = localItemMap[serverItem.id]
+//            val localDate: Long = if (localItem != null) {
+//                localItem.modificationDate ?: localItem.creationDate
+//            } else {
+//                0
+//            }
+//            val serverDate: Long = serverItem.modificationDate ?: serverItem.creationDate
+//            if ((localItem == null && (currentTime - serverItem.creationDate < twelveHoursInMillis)) || serverDate > localDate) {
+//                mergedItems.add(serverItem)
+//            }
+//        }
+//
+//        localItems.forEach { localItem ->
+//            if (!serverItemMap.containsKey(localItem.id)) {
+//                mergedItems.add(localItem)
+//            }
+//        }
+//
+//        return mergedItems
+
+        /*Пока логика мержа будет простой*/
+        return if (localItems.size >= serverItems.size) {
+            localItems
+        } else {
+            serverItems
         }
-
-        localItems.forEach { localItem ->
-            if (!serverItemMap.containsKey(localItem.id)) {
-                mergedItems.add(localItem)
-            }
-        }
-
-        return mergedItems
     }
 
     suspend fun syncLocalChangesWithBackend(): DataState {
@@ -194,6 +206,14 @@ class TodoItemsRepository @Inject constructor(
         val itemToRemove = currentList.find { it.id == id }
         if (itemToRemove != null) {
             todoListDao.deleteItem(ToDoItemEntity.fromItem(itemToRemove))
+            try {
+                service.deleteTodoItem(
+                    sharedPreferencesHelper.getHeader(),
+                    revision,
+                    id
+                )
+            } catch (_: Exception) {
+            }
         }
     }
 

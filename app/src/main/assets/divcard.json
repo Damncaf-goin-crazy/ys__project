@@ -1,0 +1,161 @@
+{
+  "card": {
+    "log_id": "about_app",
+    "states": [
+      {
+        "state_id": 0,
+        "div": {
+          "type": "container",
+          "margins": {
+            "left": 12,
+            "right": 12,
+            "top": 12,
+            "bottom": 12
+          },
+          "background": [
+            {
+              "type": "solid",
+              "color": "#e1d2e8"
+            }
+          ],
+          "border": {
+            "corner_radius": 14,
+            "stroke": {
+              "color": "#666"
+            },
+            "shadow": {
+              "offset": {
+                "x": {
+                  "value": 1
+                },
+                "y": {
+                  "value": 4
+                }
+              },
+              "color": "#000"
+            },
+            "has_shadow": true
+          },
+          "items": [
+            {
+              "type": "image",
+              "image_url": "https://bestfriends.org/sites/default/files/styles/hero_mobile/public/hero-dash/Asana3808_Dashboard_Standard.jpg?h=ebad9ecf&itok=cWevo33k",
+              "aspect": {
+                "ratio": 1
+              },
+              "content_alignment_vertical": "top"
+            },
+            {
+              "type": "text",
+              "text": "О приложении",
+              "font_size": 24,
+              "margins": {
+                "top": 12,
+                "bottom": 12,
+                "start": 8,
+                "end": 8
+              }
+            },
+            {
+              "type": "text",
+              "text": "Это приложение призвано помочь вам эффективно управлять своими задачами. Вы можете добавлять, редактировать и удалять задачи, а также устанавливать приоритеты и дедлайны.",
+              "font_size": 16,
+              "margins": {
+                "top": 8,
+                "bottom": 8,
+                "start": 8,
+                "end": 8
+              }
+            },
+            {
+              "type": "state",
+              "id": "about_app.state",
+              "states": [
+                {
+                  "state_id": "default",
+                  "div": {
+                    "type": "text",
+                    "text": "More Info",
+                    "font_size": 16,
+                    "paddings": {
+                      "top": 8,
+                      "bottom": 8,
+                      "start": 8,
+                      "end": 8
+                    },
+                    "actions": [
+                      {
+                        "log_id": "show_more_info",
+                        "url": "div-action://set_state?state_id=0/about_app.state/expanded"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "state_id": "expanded",
+                  "div": {
+                    "type": "container",
+                    "orientation": "vertical",
+                    "items": [
+                      {
+                        "type": "text",
+                        "text": "Версия: 1.0.0",
+                        "font_size": 16,
+                        "margins": {
+                          "top": 8,
+                          "bottom": 8,
+                          "start": 8,
+                          "end": 8
+                        }
+                      },
+                      {
+                        "type": "text",
+                        "text": "Разработал: Илья Сарданадзе",
+                        "font_size": 16,
+                        "margins": {
+                          "top": 8,
+                          "bottom": 8,
+                          "start": 8,
+                          "end": 8
+                        }
+                      },
+                      {
+                        "type": "text",
+                        "text": "Контакт: @Damncaf_you_crazy",
+                        "font_size": 16,
+                        "margins": {
+                          "top": 8,
+                          "bottom": 8,
+                          "start": 8,
+                          "end": 8
+                        }
+                      },
+                      {
+                        "type": "text",
+                        "text": "Less Info",
+                        "font_size": 16,
+                        "paddings": {
+                          "top": 8,
+                          "bottom": 8,
+                          "start": 8,
+                          "end": 8
+                        },
+
+                        "actions": [
+                          {
+                            "log_id": "show_less_info",
+                            "url": "div-action://set_state?state_id=0/about_app.state/default"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

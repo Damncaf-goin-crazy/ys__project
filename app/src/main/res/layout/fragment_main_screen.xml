@@ -57,6 +57,20 @@
                 android:layout_gravity="bottom">
 
                 <ImageView
+                    android:id="@+id/ivSettings"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="120dp"
+                    android:contentDescription="@string/hide_completed"
+                    android:paddingHorizontal="9dp"
+                    android:paddingBottom="8dp"
+                    android:src="@drawable/settings"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvCompletedCounter"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvCompletedCounter" />
+
+                <ImageView
                     android:id="@+id/ivNetworkStatusRefresh"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -125,4 +139,19 @@
         android:src="@drawable/add"
         app:backgroundTint="?color_blue"
         app:shapeAppearanceOverlay="@style/FabShapeCircle" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnDivKit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="90dp"
+        android:clickable="true"
+        android:contentDescription="@string/divkit"
+        android:focusable="true"
+        android:src="@drawable/settings_icon"
+        app:backgroundTint="?color_blue"
+        app:shapeAppearanceOverlay="@style/FabShapeCircle" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

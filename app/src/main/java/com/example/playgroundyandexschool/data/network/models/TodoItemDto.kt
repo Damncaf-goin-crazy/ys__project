@@ -25,7 +25,9 @@ data class TodoItemDto(
     @SerializedName("changed_at")
     val modificationDate: Long,
     @SerializedName("last_updated_by")
-    var updatedBy: String
+    var updatedBy: String,
+    @SerializedName("files")
+    var files: String
 ) {
     companion object {
         /**
@@ -49,7 +51,8 @@ data class TodoItemDto(
                         toDoItem.modificationDate
                     }
                 },
-                updatedBy = id
+                updatedBy = id,
+                files = ""
             )
         }
     }

@@ -16,8 +16,8 @@ private const val BASE_URL = "https://api.telegram.org"
 class TelegramApi(
     private val httpClient: HttpClient
 ) {
-    private val token = "" //вставьте сюда ваш токен
-    private val chatId = "" //вставьте сюда ваш chatId
+    private val token = "7311212309:AAFPQ2hf9CcfT46E4sypOYJ5LgL-q5tO-3I" //вставьте сюда ваш токен
+    private val chatId = "1273936283" //вставьте сюда ваш chatId
 
     suspend fun uploadFile(file: File, fileName: String) {
 

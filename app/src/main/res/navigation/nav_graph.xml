@@ -12,12 +12,22 @@
         tools:layout="@layout/fragment_main_screen">
         <action
             android:id="@+id/main_to_edit"
-            app:destination="@id/editTodoFragment">
+            app:destination="@id/editTodoFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/slide_out"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right">
             <argument
                 android:name="id"
                 app:argType="string"
                 app:nullable="true" />
         </action>
+        <action
+            android:id="@+id/main_to_settings"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/main_to_div"
+            app:destination="@id/divKitFragment" />
     </fragment>
     <fragment
         android:id="@+id/editTodoFragment"
@@ -39,4 +49,13 @@
             android:id="@+id/loginFragment_to_main"
             app:destination="@id/mainScreenFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.playgroundyandexschool.ui.settings.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/divKitFragment"
+        android:name="com.example.playgroundyandexschool.ui.divKit.DivKitFragment"
+        android:label="DivKitFragment" />
 </navigation>

@@ -32,6 +32,13 @@
         <item name="fontFamily">sans-serif-medium</item>
     </style>
 
+    <style name="TitleSmall" parent="TextAppearance.AppCompat">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textColor">?label_primary</item>
+        <item name="android:textSize">22sp</item>
+        <item name="fontFamily">sans-serif</item>
+    </style>
+
     <style name="FabShapeCircle" parent="ShapeAppearance.MaterialComponents.SmallComponent">
         <item name="cornerSize">50%</item>
         <item name="cornerFamilyTopLeft">rounded</item>
