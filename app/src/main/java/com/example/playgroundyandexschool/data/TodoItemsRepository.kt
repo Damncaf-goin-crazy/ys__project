@@ -1,65 +1,79 @@
 package com.example.playgroundyandexschool.data
 
-import android.content.Context
 import com.example.playgroundyandexschool.data.local.sharedPreferences.SharedPreferencesHelper
-import com.example.playgroundyandexschool.data.network.TodoApi
+import com.example.playgroundyandexschool.data.network.TodoApiService
 import com.example.playgroundyandexschool.data.network.models.TodoItemDto
-import com.example.playgroundyandexschool.data.network.models.requests.PostItemRequest
+import com.example.playgroundyandexschool.data.network.models.requests.UpdateListRequest
 import com.example.playgroundyandexschool.data.network.models.toTodoItem
+import com.example.playgroundyandexschool.data.room.ToDoItemEntity
+import com.example.playgroundyandexschool.data.room.TodoListDao
+import com.example.playgroundyandexschool.data.room.toItem
 import com.example.playgroundyandexschool.ui.models.DataState
 import com.example.playgroundyandexschool.ui.models.TodoItem
 import com.example.playgroundyandexschool.utils.MyConnectivityManager
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import java.util.concurrent.atomic.AtomicBoolean
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Репозиторий для управления списком задач, включая загрузку, сохранение и удаление задач.
  */
-class TodoItemsRepository private constructor(context: Context) {
-
-    private val todoItemsList: MutableStateFlow<MutableList<TodoItem>> =
-        MutableStateFlow(mutableListOf())
-
-    private val sharedPreferencesHelper = SharedPreferencesHelper.getInstance(context)
+@Singleton
+class TodoItemsRepository @Inject constructor(
+    private val sharedPreferencesHelper: SharedPreferencesHelper,
+    private val todoListDao: TodoListDao,
+    private val myConnectivityManager: MyConnectivityManager,
+    private val service: TodoApiService,
+    repositoryScope: CoroutineScope
+) {
 
     private var revision: Int = 0
-    private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var reloads = 0
-    private val MAX_RELOADS = 4
+
+    private val _todoItemsFlow: Flow<List<TodoItem>> =
+        todoListDao.getListAsFlow().map { entityList -> entityList.map { it.toItem() } }
+    private val todoItemsFlow: StateFlow<List<TodoItem>> = _todoItemsFlow.stateIn(
+        scope = repositoryScope, started = SharingStarted.Eagerly, initialValue = emptyList()
+    )
 
     init {
         repositoryScope.launch {
             loadItems()
+            syncLocalChangesWithBackend()
         }
     }
 
-    suspend fun subscribeToInternet(
-        myConnectivityManager: MyConnectivityManager,
-        isConnected: AtomicBoolean
-    ) {
+
+    suspend fun subscribeToInternet(isConnected: AtomicBoolean) {
+
         myConnectivityManager.connectionAsStateFlow.collect { connected ->
             isConnected.set(connected)
             if (connected) {
                 loadItems()
+                syncLocalChangesWithBackend()
             }
         }
     }
 
     suspend fun loadItems(): DataState {
         return try {
-            val response = TodoApi.retrofitService.getTodos(sharedPreferencesHelper.getHeader())
+            val response = service.getTodos(sharedPreferencesHelper.getHeader())
             if (response.isSuccessful) {
                 response.body()?.let { getListResponse ->
-                    val items = getListResponse.list.map { it.toTodoItem() }.toMutableList()
-                    todoItemsList.value = items
+                    val serverItems = getListResponse.list.map { it.toTodoItem() }
+                    val localItems = todoListDao.getList().map { it.toItem() }
+
+                    val mergedItems = mergeItems(localItems, serverItems)
+
                     revision = getListResponse.revision
+                    todoListDao.insertList(mergedItems.map { ToDoItemEntity.fromItem(it) })
                 }
                 reloads = 0
                 DataState.Ok
@@ -78,143 +92,112 @@ class TodoItemsRepository private constructor(context: Context) {
             loadItems()
         } else {
             reloads = 0
-            DataState.Error("Loading items failed after $MAX_RELOADS attempts")
+            DataState.Error("Loading items failed after $MAX_RELOADS attempts. All changes will be saved locally")
         }
+    }
+
+    private fun mergeItems(
+        localItems: List<TodoItem>, serverItems: List<TodoItem>
+    ): List<TodoItem> {
+        val mergedItems = mutableListOf<TodoItem>()
+        val serverItemMap = serverItems.associateBy { it.id }
+        val localItemMap = localItems.associateBy { it.id }
+
+        serverItems.forEach { serverItem ->
+            val localItem = localItemMap[serverItem.id]
+            val localDate: Long = if (localItem != null) {
+                localItem.modificationDate ?: localItem.creationDate
+            } else {
+                0
+            }
+            val serverDate: Long = serverItem.modificationDate ?: serverItem.creationDate
+            if (localItem == null || serverDate > localDate) {
+                mergedItems.add(serverItem)
+            }
+        }
+
+        localItems.forEach { localItem ->
+            if (!serverItemMap.containsKey(localItem.id)) {
+                mergedItems.add(localItem)
+            }
+        }
+
+        return mergedItems
+    }
+
+    suspend fun syncLocalChangesWithBackend(): DataState {
+        try {
+            val userId = sharedPreferencesHelper.userId
+            val localItems = todoListDao.getList()
+            val todoItems = localItems.map { it.toItem() }
+            val todoDtoItems = todoItems.map { TodoItemDto.fromItem(it, userId) }
+
+            val response = service.updateTodoList(
+                sharedPreferencesHelper.getHeader(), revision, UpdateListRequest("ok", todoDtoItems)
+
+            )
+            if (response.isSuccessful) {
+                response.body()?.let { getListResponse ->
+                    revision = getListResponse.revision
+                }
+            } else {
+                response.errorBody()?.close()
+            }
+            return DataState.Ok
+        } catch (e: Exception) {
+            return DataState.Error("Synchronising items failed after $MAX_RELOADS attempts. All changes will be saved locally")
+        }
+    }
+
+
+    //Функция для обновления раз в 8 часов.
+    suspend fun saveItemsToLocalDatabase(items: List<TodoItem>) {
+        todoListDao.insertList(items.map { ToDoItemEntity.fromItem(it) })
+    }
+
+    //Функция для обновления раз в 8 часов.
+    fun updateRevision(newRevision: Int) {
+        revision = newRevision
     }
 
 
     fun getTodoItems(): StateFlow<List<TodoItem>> {
-        return todoItemsList.asStateFlow()
+        return todoItemsFlow
     }
 
     fun getTodoItem(id: String): TodoItem? {
-        return todoItemsList.value.find { it.id == id }
+        return todoItemsFlow.value.find { it.id == id }
     }
 
-    suspend fun saveTodoItem(todoItem: TodoItem?): DataState {
-        if (todoItem == null) return DataState.Error("No such item")
-        val currentList = todoItemsList.value.toMutableList()
+    suspend fun saveTodoItem(todoItem: TodoItem?) {
+        if (todoItem == null) return
+        val currentList = todoItemsFlow.value.toMutableList()
         val index = currentList.indexOfFirst { it.id == todoItem.id }
 
-        return try {
-            if (index == -1) {
-                handleAddTodoItem(todoItem, currentList)
-            } else {
-                handleUpdateTodoItem(todoItem, currentList, index)
-            }
-            todoItemsList.value = currentList
-            reloads = 0
-            DataState.Ok
-        } catch (e: Exception) {
-            handleSaveError(todoItem)
-        }
-    }
-
-    private suspend fun handleSaveError(todoItem: TodoItem?): DataState {
-        return if (reloads < MAX_RELOADS) {
-            reloads++
-            saveTodoItem(todoItem)
+        if (index == -1) {
+            handleAddTodoItem(todoItem)
         } else {
-            reloads = 0
-            DataState.Error("Work with items failed after $MAX_RELOADS attempts. Changes will be lost")
+            handleUpdateTodoItem(todoItem)
         }
     }
 
-    private suspend fun handleAddTodoItem(todoItem: TodoItem, currentList: MutableList<TodoItem>) {
-        val response = TodoApi.retrofitService.addTodoItem(
-            sharedPreferencesHelper.getHeader(),
-            revision,
-            PostItemRequest("ok", TodoItemDto.fromItem(todoItem))
-        )
-        if (response.isSuccessful) {
-            response.body()?.let { getListResponse ->
-                revision = getListResponse.revision
-            }
-            response.body()?.element?.let {
-                val newItem = it.toTodoItem()
-                currentList.add(newItem)
-            }
-        } else {
-            response.errorBody()?.close()
-        }
+    private suspend fun handleAddTodoItem(todoItem: TodoItem) {
+        todoListDao.insertItem(ToDoItemEntity.fromItem(todoItem))
     }
 
-    private suspend fun handleUpdateTodoItem(
-        todoItem: TodoItem,
-        currentList: MutableList<TodoItem>,
-        index: Int
-    ) {
-        val response = TodoApi.retrofitService.updateTodoItem(
-            sharedPreferencesHelper.getHeader(),
-            revision,
-            todoItem.id,
-            PostItemRequest("ok", TodoItemDto.fromItem(todoItem))
-        )
-        if (response.isSuccessful) {
-            response.body()?.let { getListResponse ->
-                revision = getListResponse.revision
-            }
-            response.body()?.element?.let {
-                val updatedItem = it.toTodoItem()
-                currentList[index] = updatedItem
-            }
-        } else {
-            response.errorBody()?.close()
-        }
+    private suspend fun handleUpdateTodoItem(todoItem: TodoItem) {
+        todoListDao.updateItem(ToDoItemEntity.fromItem(todoItem))
     }
 
-
-    suspend fun removeTodoItem(id: String): DataState {
-        val currentList = todoItemsList.value.toMutableList()
+    suspend fun removeTodoItem(id: String) {
+        val currentList = todoItemsFlow.value.toMutableList()
         val itemToRemove = currentList.find { it.id == id }
         if (itemToRemove != null) {
-            return try {
-                val response = TodoApi.retrofitService.deleteTodoItem(
-                    sharedPreferencesHelper.getHeader(),
-                    revision,
-                    id
-                )
-                if (response.isSuccessful) {
-                    response.body()?.let { getListResponse ->
-                        revision = getListResponse.revision
-                    }
-                    currentList.remove(itemToRemove)
-                    todoItemsList.value = currentList
-                    reloads = 0
-                    DataState.Ok
-                } else {
-                    response.errorBody()?.close()
-                    handleRemoveError(id)
-                }
-            } catch (e: HttpException) {
-                handleRemoveError(id)
-            } catch (e: Exception) {
-                handleRemoveError(id)
-            }
-        } else {
-            return DataState.Error("No such item")
+            todoListDao.deleteItem(ToDoItemEntity.fromItem(itemToRemove))
         }
     }
 
-    private suspend fun handleRemoveError(id: String): DataState {
-        return if (reloads < MAX_RELOADS) {
-            reloads++
-            removeTodoItem(id)
-        } else {
-            reloads = 0
-            DataState.Error("Work with items deletion failed after $MAX_RELOADS attempts.")
-        }
+    private companion object {
+        private const val MAX_RELOADS = 4
     }
-
-    companion object {
-        private var instance: TodoItemsRepository? = null
-
-        fun getInstance(context: Context): TodoItemsRepository {
-            return instance ?: synchronized(this) {
-                instance ?: TodoItemsRepository(context).also { instance = it }
-            }
-        }
-    }
-
-
 }

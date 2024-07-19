@@ -35,7 +35,7 @@
     <string name="network_error_update_todo">Ошибка обновления. Подключитесь к сети</string>
     <string name="network_error_add_todo">Ошибка добавления. Подключитесь к сети</string>
     <string name="offline_message">Подключитесь к интернету, чтобы загрузить данные</string>
-    <string name="authorization_message">Авторизируйтесь, чтобы начать пользоваться приложением. Воспользуйтесь Яндекс ID или гостевым аккаунтом</string>
+    <string name="authorization_message">Авторизируйтесь, чтобы начать пользоваться приложением. Воспользуйтесь Яндекс ID.</string>
     <string name="registration_button">registration button</string>
     <string name="state">state</string>
 

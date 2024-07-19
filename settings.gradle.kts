@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google {
             content {
@@ -17,8 +18,12 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
+    versionCatalogs{
+        create("libs"){
+            from(files("libs.versions.toml"))
+        }
+    }
 }
 
 rootProject.name = "Playground Yandex School"
 include(":app")
- 
